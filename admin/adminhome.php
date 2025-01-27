@@ -9,7 +9,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGFETqB7g/0Qfdf5xUL6VwKZV8Hj1/igZ0SovJUc1Y6z" crossorigin="anonymous"></script>
   <style>
     body { background-color: #f8f9fa; }
-    .navbar { background-color: #5d4037 !important; }
+    .navbar { background-color: #5d4037 !important;
+      color: white !important;
+     }
+    
     .menu-item { transition: transform 0.2s; cursor: pointer; }
     .menu-item:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .product-icon { height: 80px; display: flex; align-items: center; justify-content: center; }
@@ -133,8 +136,24 @@ if ($userresult) {
 $selected_user_id = $_SESSION['selected_user_id'];
 $selected_user = $conn->query("SELECT name FROM users WHERE id = $selected_user_id")->fetch_assoc();
 
-$products = $conn->query("SELECT * FROM products")->fetch_all(MYSQLI_ASSOC);
-$total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+$query = "SELECT * FROM products";
+if (!empty($search)) {
+  $search_safe = $conn->real_escape_string($search);
+  $query .= " WHERE name LIKE '%$search_safe%'";
+}
+
+$all_products = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+$total_products = count($all_products);
+
+$products_per_page = 6;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max(1, $page); 
+$offset = ($page - 1) * $products_per_page;
+
+$total_pages = ceil($total_products / $products_per_page);
+$products = array_slice($all_products, $offset, $products_per_page);
 ?>
 
 <?php include "../shared/navbar.php"; ?>
@@ -224,28 +243,45 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
     <div class="col-md-8">
       <div class="card mb-4">
         <div class="card-header">Menu</div>
-        <div class="card-body">
-          <div class="row row-cols-1 row-cols-md-3 g-4">
-            <?php foreach ($products as $product): ?>
-            <div class="col">
-              <form method="post">
-                <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                <div class="card menu-item h-100">
-                  <div class="product-icon">
-                    <img src="../images/product/<?= htmlspecialchars($product['image']) ?>" width="50" height="50" alt="<?= htmlspecialchars($product['name']) ?>">
-                  </div>
-                  <div class="card-body text-center">
-                    <h6><?= htmlspecialchars($product['name']) ?></h6>
-                    <p class="text-muted">EGP <?= number_format($product['price'], 2) ?></p>
-                    <button name="add_item" class="btn btn-sm btn-outline-secondary">
-                      <i class="fas fa-plus"></i> Add to Order
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <?php endforeach; ?>
+        <form class="mb-4" method="get">
+          <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search menu..." value="<?= htmlspecialchars($search) ?>">
+            <button class="btn btn-outline-dark" type="submit"><i class="fas fa-search"></i> Search</button>
           </div>
+        </form>
+        <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <?php foreach ($products as $product): ?>
+        <div class="col">
+          <form method="post">
+            <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+            <div class="card menu-item h-100">
+              <div class="product-icon">
+                <img src="../images/product/<?= htmlspecialchars($product['image']) ?>" width="50" height="50" alt="<?= htmlspecialchars($product['name']) ?>">
+              </div>
+              <div class="card-body text-center">
+                <h6><?= htmlspecialchars($product['name']) ?></h6>
+                <p class="text-muted">EGP <?= number_format($product['price'], 2) ?></p>
+                <button name="add_item" class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-plus"></i> Add to Order
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <?php endforeach; ?>
+      </div>
+      <div class="mt-4 d-flex justify-content-center">
+  <nav>
+    <ul class="pagination">
+      <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+        <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+          <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+        </li>
+      <?php endfor; ?>
+    </ul>
+  </nav>
+</div>
         </div>
       </div>
     </div>

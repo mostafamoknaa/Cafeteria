@@ -230,7 +230,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
                         echo "<td>
                                 <form method='POST' style='display:inline; margin:0; padding:0;'>
                                     <input type='hidden' name='categoryId' value='" . $row['id'] . "'>
-                                    <button type='submit' name='delbtn' class='delete-btn' onclick=\"return confirm('Are you sure you want to delete this category?');\">Delete</button>
+                                    <button type='submit' name='delbtn' class='delete-btn'>Delete</button>
                                 </form>
                             </td>";
                         echo "</tr>";

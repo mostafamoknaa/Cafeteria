@@ -17,12 +17,13 @@ $user1 = mysqli_fetch_assoc($result1);
     <style>
         .navbar {
             background-color: #5d4037 !important;
+            color: white !important;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container text-white">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light text-white">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>

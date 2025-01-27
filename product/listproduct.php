@@ -217,6 +217,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
         <h1><i class="fas fa-box"></i> Product Management</h1>
         <a href="addproduct.php" class="btn">Add Product</a>
     </header>
+    <div style="margin-bottom: 20px;">
+        <input type="text" id="searchInput" placeholder="Search products..." style="width: 20%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+    </div>
+
     <h2><i class="fas fa-list"></i> Product List</h2>
     <div class="table-responsive">
         <table id="productTable">
@@ -276,17 +280,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
     const table = document.getElementById('productTable');
     const rows = Array.from(table.getElementsByTagName('tbody')[0].rows);
     const pagination = document.getElementById('pagination');
-    const rowsPerPage = 4;
-    const pageCount = Math.ceil(rows.length / rowsPerPage);
+    const rowsPerPage = 3;
+    let filteredRows = [...rows];
+    const searchInput = document.getElementById('searchInput');
 
-    function displayPage(page) {
+    function displayPage(page, rowsToShow) {
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
-        rows.forEach((row, index) => {
-            row.style.display = index >= start && index < end ? '' : 'none';
-        });
+
+        rows.forEach(row => row.style.display = 'none');
+        rowsToShow.slice(start, end).forEach(row => row.style.display = '');
 
         pagination.innerHTML = '';
+        const pageCount = Math.ceil(rowsToShow.length / rowsPerPage);
+
         for (let i = 1; i <= pageCount; i++) {
             const link = document.createElement('a');
             link.textContent = i;
@@ -294,13 +301,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
             link.className = i === page ? 'active' : '';
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                displayPage(i);
+                displayPage(i, rowsToShow);
             });
             pagination.appendChild(link);
         }
     }
 
-    displayPage(1);
+    function filterRows() {
+        const searchTerm = searchInput.value.toLowerCase();
+        filteredRows = rows.filter(row => {
+            const cells = row.getElementsByTagName('td');
+            for (let cell of cells) {
+                if (cell.innerText.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        displayPage(1, filteredRows);
+    }
+
+    searchInput.addEventListener('input', filterRows);
+    displayPage(1, filteredRows);
 </script>
+
 </body>
 </html>
