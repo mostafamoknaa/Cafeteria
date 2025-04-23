@@ -4,7 +4,7 @@ session_start();
 $errors = [];
 
 if (isset($_POST["btn"])) {
-    include_once '../connect.php'; // نرجع خطوة لفوق عشان نجيب ملف الاتصال
+    include_once '../connect.php'; 
 
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
