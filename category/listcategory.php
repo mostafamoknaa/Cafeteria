@@ -63,7 +63,7 @@ $totalPages = ceil($totalRows / $limit);
 $categoriesQuery = "SELECT * FROM categories ORDER BY id ASC LIMIT $limit OFFSET $offset";
 $categoriesResult = mysqli_query($conn, $categoriesQuery);
 ?>
-
+<?php include "../shared/navbar.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

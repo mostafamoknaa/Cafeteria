@@ -4,8 +4,7 @@ session_start();
 $errors = [];
 
 if (isset($_POST["btn"])) {
-    include_once '../connect.php'; // نرجع خطوة لفوق عشان نجيب ملف الاتصال
-
+    include_once '../connect.php'; 
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
@@ -17,7 +16,6 @@ if (isset($_POST["btn"])) {
         $errors['confirm_password'] = "Passwords do not match";
     }
 
-    // التحقق من الإيميل إذا كان متكرر
     $check_email = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($conn, $check_email);
 
@@ -25,7 +23,6 @@ if (isset($_POST["btn"])) {
         $errors['email'] = "Email already registered.";
     }
 
-    // ✅ لو فيه أخطاء، احفظها وأرجع لـ registration.php
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
         $_SESSION['old'] = $_POST;
@@ -33,7 +30,6 @@ if (isset($_POST["btn"])) {
         exit;
     }
 
-    // ✅ لو مفيش أخطاء، سجل المستخدم
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     $sql = "INSERT INTO users (name, email, password, picture, role) 
