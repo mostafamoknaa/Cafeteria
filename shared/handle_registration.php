@@ -17,7 +17,6 @@ if (isset($_POST["btn"])) {
         $errors['confirm_password'] = "Passwords do not match";
     }
 
-    // التحقق من الإيميل إذا كان متكرر
     $check_email = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($conn, $check_email);
 
@@ -25,7 +24,6 @@ if (isset($_POST["btn"])) {
         $errors['email'] = "Email already registered.";
     }
 
-    // ✅ لو فيه أخطاء، احفظها وأرجع لـ registration.php
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
         $_SESSION['old'] = $_POST;
