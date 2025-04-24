@@ -19,7 +19,6 @@ if ($result) {
     }
 }
 
-// Fetch product if editing
 if (isset($_GET['edit'])) {
     $product_id = intval($_GET['edit']);
     $query = "SELECT * FROM products WHERE id = $product_id";
@@ -66,7 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($category_id)) {
         $errors["category"] = "Please select a category.";
     }
-
     if (!empty($imageName)) {
         if ($imageError !== 0) {
             $errors["image"] = "Please upload a valid image file.";
@@ -250,6 +248,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     .alert ul {
       margin-left: 20px;
     }
+        .error {
+      color: var(--danger-color);
+      font-size: 14px;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -271,7 +274,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
   <div class="card">
     <h2><?= isset($_GET['edit']) ? 'Edit Product' : 'Add New Product' ?></h2>
-    <form action="" method="post" enctype="multipart/form-data">
+    <form id="productForm" action="" method="post" enctype="multipart/form-data" novalidate>
       <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
       <?php if (isset($_GET['edit'])): ?>
         <input type="hidden" name="product_id" value="<?= htmlspecialchars($_GET['edit']) ?>">
@@ -281,11 +284,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <div class="form-group">
         <label for="name">Product Name:</label>
         <input type="text" id="name" name="name" value="<?= htmlspecialchars($name) ?>" required>
+        <?php if ($errors["name"]): ?><div class="error"><?= $errors["name"] ?></div><?php endif; ?>
       </div>
 
       <div class="form-group">
         <label for="price">Price ($):</label>
         <input type="number" id="price" name="price" value="<?= htmlspecialchars($price) ?>" step="0.01" min="0" required>
+        <?php if ($errors["price"]): ?><div class="error"><?= $errors["price"] ?></div><?php endif; ?>
       </div>
 
       <div class="form-group">
@@ -298,11 +303,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </option>
           <?php endforeach; ?>
         </select>
+        <?php if ($errors["category"]): ?><div class="error"><?= $errors["category"] ?></div><?php endif; ?>
       </div>
 
       <div class="form-group file-input-group">
         <label for="image">Product Image:</label>
         <input type="file" id="image" name="image" accept="image/*">
+        <?php if ($errors["image"]): ?><div class="error"><?= $errors["image"] ?></div><?php endif; ?>
         <?php if (isset($_GET['edit']) && !empty($image)): ?>
           <div>
             <p>Current image:</p>
@@ -321,7 +328,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <i class="fas fa-save"></i> <?= isset($_GET['edit']) ? 'Update Product' : 'Add Product' ?>
         </button>
         <?php if (isset($_GET['edit'])): ?>
-          <a href="products.php" class="btn">Cancel</a>
+          <a href="listproduct.php" class="btn">Cancel</a>
         <?php endif; ?>
       </div>
     </form>
@@ -329,19 +336,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </div>
 
 <script>
-  document.getElementById('image').onchange = function(event) {
-    var reader = new FileReader();
-    reader.onload = function() {
-      var output = document.querySelector('.current-image');
-      if (!output) {
-        output = document.createElement('img');
-        output.className = 'current-image';
-        document.querySelector('.file-input-group').after(output);
-      }
-      output.src = reader.result;
-    };
-    reader.readAsDataURL(event.target.files[0]);
+document.getElementById('productForm').onsubmit = function(e) {
+  let valid = true;
+  const name = document.getElementById('name');
+  const price = document.getElementById('price');
+  const category = document.getElementById('category');
+
+  document.querySelectorAll('.error').forEach(el => el.remove());
+
+  if (name.value.trim() === "") {
+    name.insertAdjacentHTML('afterend', '<div class="error">Product name is required.</div>');
+    valid = false;
+  }
+
+  if (price.value === "" || isNaN(price.value) || Number(price.value) < 0) {
+    price.insertAdjacentHTML('afterend', '<div class="error">Valid price is required.</div>');
+    valid = false;
+  }
+
+  if (category.value === "") {
+    category.insertAdjacentHTML('afterend', '<div class="error">Select a category.</div>');
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+};
+
+document.getElementById('image').onchange = function(event) {
+  var reader = new FileReader();
+  reader.onload = function() {
+    var output = document.querySelector('.current-image');
+    if (!output) {
+      output = document.createElement('img');
+      output.className = 'current-image';
+      document.querySelector('.file-input-group').after(output);
+    }
+    output.src = reader.result;
   };
+  reader.readAsDataURL(event.target.files[0]);
+};
 </script>
 
 </body>
