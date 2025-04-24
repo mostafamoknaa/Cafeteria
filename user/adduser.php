@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = $_POST["confirm_password"];
     $role = mysqli_real_escape_string($conn, $_POST["role"]);
 
- 
+
     if ($password !== $confirm_password) {
         $error = "Passwords do not match!";
     } elseif (strlen($password) < 6) {
@@ -36,15 +36,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_close($stmt);
     }
 
-  
+
     $picture = '';
     if (empty($error) && isset($_FILES["picture"])) {
         $targetDir = "../images/";
         $fileExt = strtolower(pathinfo($_FILES["picture"]["name"], PATHINFO_EXTENSION));
-        $fileName = time() . '_' . uniqid() . '.' . $fileExt; 
+        $fileName = time() . '_' . uniqid() . '.' . $fileExt;
         $targetFile = $targetDir . $fileName;
 
-   
+
         $check = getimagesize($_FILES["picture"]["tmp_name"]);
         if ($check === false) {
             $error = "File is not a valid image!";
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-  
+
     if (empty($error)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $sql = "INSERT INTO users (name, email, password, picture, role) 
@@ -76,7 +76,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_bind_param($stmt, "sssss", $name, $email, $hashed_password, $picture, $role);
 
         if (mysqli_stmt_execute($stmt)) {
-            $success = "User created successfully!";
+            header("Location: listuser.php");
+            exit;
         } else {
             $error = "Error: " . mysqli_error($conn);
         }
@@ -118,14 +119,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="container form-container">
         <div class="text-center">
-            <h1 class="form-title">Cafeteria</h1>
+            <h1 class="form-title">Add User</h1>
         </div>
 
-        <?php if ($success): ?>
-            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
-        <?php elseif ($error): ?>
-            <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
+
 
         <form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
             <div class="mb-3">
@@ -181,7 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'use strict';
             const forms = document.querySelectorAll('.needs-validation');
 
-           
+
             const password = document.getElementById('password');
             const confirm_password = document.getElementById('confirm_password');
 
