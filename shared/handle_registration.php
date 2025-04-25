@@ -5,6 +5,8 @@ $errors = [];
 
 if (isset($_POST["btn"])) {
     include_once '../connect.php'; 
+
+
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
