@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $result->fetch_assoc();
 
         if (password_verify($password, $user['password'])) {
-            // حفظ معلومات المستخدم في السيشن
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
             $_SESSION['user_role'] = $user['role'];
@@ -38,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($remember) {
                 $token = bin2hex(random_bytes(32));
-                setcookie('remember_token', $token, time() + 60 * 60 * 24 * 30, "/"); // 30 يوم
+                setcookie('remember_token', $token, time() + 60 * 60 * 24 * 30, "/"); 
                 $updateStmt = $conn->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
                 $updateStmt->bind_param("si", $token, $user['id']);
                 $updateStmt->execute();

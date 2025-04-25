@@ -31,7 +31,6 @@ if (isset($_POST["btn"])) {
         exit;
     }
 
-    // ✅ لو مفيش أخطاء، سجل المستخدم
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     $sql = "INSERT INTO users (name, email, password, picture, role) 
