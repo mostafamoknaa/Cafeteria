@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user['role'] === 'admin') {
                 header("Location: ../product/listproduct.php");
             } else {
-                header("Location: ../user/listuser.php");
+                header("Location: ../user/userhome.php");
             }
             exit();
         } else {
