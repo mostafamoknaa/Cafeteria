@@ -46,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($user['role'] === 'admin') {
-                header("Location: admin_dashboard.php");
+                header("Location: ../product/listproduct.php");
             } else {
-                header("Location: user_dashboard.php");
+                header("Location: ../user/listuser.php");
             }
             exit();
         } else {

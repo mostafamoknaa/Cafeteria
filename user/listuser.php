@@ -43,9 +43,9 @@ $sql = "SELECT id, name, email, picture, role, created_at FROM users ORDER BY cr
 $result = mysqli_query($conn, $sql);
 $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-mysqli_close($conn);
-?>
 
+?>
+<?php include "../shared/navbar.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -152,6 +152,7 @@ mysqli_close($conn);
             </table>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 
 </body>
 </html>

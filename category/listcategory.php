@@ -47,7 +47,6 @@ if (isset($_POST["delbtn"])) {
     }
 }
 
-
 $limit = 6;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
@@ -63,24 +62,24 @@ $totalPages = ceil($totalRows / $limit);
 $categoriesQuery = "SELECT * FROM categories ORDER BY id ASC LIMIT $limit OFFSET $offset";
 $categoriesResult = mysqli_query($conn, $categoriesQuery);
 ?>
-<?php include "../shared/navbar.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Manage Categories</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
 
-        .container {
+        .main-container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -90,6 +89,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         h2 {
             text-align: center;
             color: #333;
+            margin-bottom: 20px;
         }
 
         form {
@@ -125,6 +125,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         .error {
             color: red;
             text-align: center;
+            margin-bottom: 15px;
         }
 
         table {
@@ -136,6 +137,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         th, td {
             padding: 12px;
             border: 1px solid #ccc;
+            text-align: center;
         }
 
         th {
@@ -159,6 +161,25 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
             background-color: #c82333;
         }
 
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .pagination a.active {
+            background-color: #df4adf;
+            color: white;
+        }
+
         @media (max-width: 600px) {
             form {
                 flex-direction: column;
@@ -172,7 +193,9 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
     </style>
 </head>
 <body>
-    <div class="container">
+    <?php include "../shared/navbar.php"; ?>
+    
+    <div class="main-container">
         <h2>Manage Categories</h2>
         <form id="category-form" action="" method="POST" onsubmit="return validateForm()">
             <input type="hidden" id="category-id" name="categoryId">
@@ -200,11 +223,11 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
                         echo "<tr>";
                         echo "<td>" . $count++ . "</td>";
                         echo "<td>" . htmlspecialchars($row["name"]) . "</td>";
-                        echo "<td><button class='update-btn' type='button' onclick=\"editCategory('{$row['id']}', '" . htmlspecialchars($row['name'], ENT_QUOTES) . "')\">Edit</button></td>";
+                        echo "<td><button class='update-btn' type='button' onclick=\"editCategory('" . $row['id'] . "', '" . htmlspecialchars($row['name'], ENT_QUOTES) . "')\">Edit</button></td>";
                         echo "<td>
-                                <form method='POST' style='display:inline'>
-                                    <input type='hidden' name='categoryId' value='{$row['id']}'>
-                                    <button type='submit' name='delbtn' class='delete-btn'>Delete</button>
+                                <form method='POST' style='display:inline; margin:0; padding:0;'>
+                                    <input type='hidden' name='categoryId' value='" . $row['id'] . "'>
+                                    <button type='submit' name='delbtn' class='delete-btn' onclick=\"return confirm('Are you sure you want to delete this category?');\">Delete</button>
                                 </form>
                             </td>";
                         echo "</tr>";
@@ -212,20 +235,20 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
                 }
                 ?>
             </tbody>
+        </table>
 
-            </table>
-            <div style="margin-top: 20px; text-align: center;">
-                <?php if ($totalPages > 1): ?>
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <a href="?page=<?= $i ?>" style="margin: 0 5px; text-decoration: none; color: <?= $i == $page ? '#df4adf' : '#333' ?>; font-weight: <?= $i == $page ? 'bold' : 'normal' ?>;">
-                            <?= $i ?>
-                        </a>
-                    <?php endfor; ?>
-                <?php endif; ?>
-            </div>
-            
+        <?php if ($totalPages > 1): ?>
+        <div class="pagination">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="?page=<?= $i ?>" class="<?= $i == $page ? 'active' : '' ?>">
+                    <?= $i ?>
+                </a>
+            <?php endfor; ?>
+        </div>
+        <?php endif; ?>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGFETqB7g/0Qfdf5xUL6VwKZV8Hj1/igZ0SovJUc1Y6z" crossorigin="anonymous"></script>
     <script>
         function editCategory(id, name) {
             document.getElementById("category-id").value = id;
