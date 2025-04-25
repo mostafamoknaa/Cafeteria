@@ -45,7 +45,7 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
 ?>
-<?php include "../shared/navbar.php"; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -80,10 +80,11 @@ $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 </head>
 
 <body>
+<?php include "../shared/navbar.php"; ?>
     <div class="container table-container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="text-primary">Manage Users</h1>
-            <a href="adduser.php" class="btn btn-primary">
+            <a href="adduser.php" class="btn" style="background-color: #5d4037; color: white;">
                 <i class="fas fa-user-plus"></i> Add New User
             </a>
         </div>

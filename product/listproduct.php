@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
+            --primary-color: #5d4037;
             --secondary-color: #2ecc71;
             --danger-color: #e74c3c;
             --text-color: #333;

@@ -94,13 +94,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   exit();
 }
 
-$products = $conn->query("SELECT * FROM products")->fetch_all(MYSQLI_ASSOC);
+$products = $conn->query("SELECT * FROM products where available = 1")->fetch_all(MYSQLI_ASSOC);
 $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
-    <a class="navbar-brand" href="#">Cafe Order System</a>
+    <a class="navbar-brand" href="#">Cafeteria</a>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>

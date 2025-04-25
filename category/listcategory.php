@@ -114,12 +114,12 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
             border: none;
             border-radius: 6px;
             color: white;
-            background-color: #df4adf;
+            background-color: #5d4037;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #c83cc8;
+            background-color:rgb(15, 4, 1);
         }
 
         .error {
@@ -141,12 +141,13 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         }
 
         th {
-            background-color: #df4adf;
+            background-color: #5d4037;
             color: white;
         }
 
         .update-btn {
             background-color: #e0ac0d;
+            border-radius: 10px;
         }
 
         .update-btn:hover {
@@ -155,6 +156,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
 
         .delete-btn {
             background-color: #dc3545;
+            border-radius: 10px;
         }
 
         .delete-btn:hover {
@@ -176,7 +178,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         }
 
         .pagination a.active {
-            background-color: #df4adf;
+            background-color: #5d4037;
             color: white;
         }
 
