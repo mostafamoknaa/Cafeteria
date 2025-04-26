@@ -1,7 +1,9 @@
-
-
 <?php
 require '../connect.php';
+require '../vendor/autoload.php'; 
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 $email = $_GET['email'] ?? '';
 $successMessage = '';
@@ -24,6 +26,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             $successMessage = "Password updated successfully. <a href='login.php'>Click here to login</a>";
+
+            // إرسال الإيميل باستخدام PHPMailer
+            $mail = new PHPMailer(true);
+
+            try {
+                // إعدادات السيرفر
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'wwwrehabkamal601@gmail.com'; 
+                $mail->Password = 'ebvb weuu wyvy qdbg'; 
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port = 587;
+
+                $mail->setFrom('wwwrehabkamal601@gmail.com', 'Cafeteria');
+
+                $mail->addAddress($email);
+
+                // محتوى الرسالة
+                $mail->isHTML(true);
+                $mail->Subject = 'Password Changed Successfully';
+                $mail->Body    = "Hello,<br><br>Your password has been changed successfully.<br><br>If you did not make this change, please contact support immediately.";
+                $mail->AltBody = "Hello,\n\nYour password has been changed successfully.\n\nIf you did not make this change, please contact support immediately.";
+
+                $mail->send();
+            } catch (Exception $e) {
+                $errorMessage = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
         } else {
             $errorMessage = "Error updating password.";
         }
@@ -33,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
