@@ -86,19 +86,15 @@ unset($_SESSION['errors'], $_SESSION['old']);
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="role" class="form-label">Role</label>
-                        <!-- <select class="form-select <?php echo isset($errors['role']) ? 'is-invalid' : ''; ?>" 
-                                id="role" name="role" required>
-                            <option value="customer" <?php echo (($_POST['role'] ?? '') === 'customer' ? 'selected' : ''); ?>>Customer</option>
-                            <option value="admin" <?php echo (($_POST['role'] ?? '') === 'admin' ? 'selected' : ''); ?>>Admin</option>
-                        </select> -->
+                       
                         <select class="form-select <?php echo isset($errors['role']) ? 'is-invalid' : ''; ?>" 
         id="role" name="role" required>
     <option value="" disabled <?php echo empty($old['role']) ? 'selected' : ''; ?>>Choose role</option>
     <option value="customer" <?php echo ($old['role'] ?? '') === 'customer' ? 'selected' : ''; ?>>Customer</option>
     <option value="admin" <?php echo ($old['role'] ?? '') === 'admin' ? 'selected' : ''; ?>>Admin</option>
-</select>
+</select> -->
 
 
                         <div class="invalid-feedback">
