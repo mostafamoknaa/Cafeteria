@@ -10,7 +10,7 @@ if (isset($_POST["btn"])) {
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
     $confirm_password = $_POST["confirm_password"];
-    $role = $_POST["role"];
+    // $role = $_POST["role"];
     $picture_name = '';
 
     if ($password !== $confirm_password) {
@@ -33,8 +33,8 @@ if (isset($_POST["btn"])) {
 
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users (name, email, password, picture, role) 
-            VALUES ('$name', '$email', '$hashed_password', '$picture_name', '$role')";
+    $sql = "INSERT INTO users (name, email, password, picture) 
+            VALUES ('$name', '$email', '$hashed_password', '$picture_name')";
 
     if (mysqli_query($conn, $sql)) {
         $_SESSION['success'] = "Registration successful! You can now log in.";

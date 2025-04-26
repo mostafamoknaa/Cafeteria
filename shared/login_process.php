@@ -45,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($user['role'] === 'admin') {
-                header("Location: admin_dashboard.php");
+                header("Location: ../admin/adminhome.php");
             } else {
-                header("Location: user_dashboard.php");
+                header("Location: ../user/userhome.php");
             }
             exit();
         } else {
