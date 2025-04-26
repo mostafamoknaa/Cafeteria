@@ -70,6 +70,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
     <title>Manage Categories</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -115,12 +116,12 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
             border: none;
             border-radius: 6px;
             color: white;
-            background-color: #df4adf;
+            background-color: #5d4037;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #c83cc8;
+            background-color:rgb(15, 4, 1);
         }
 
         .error {
@@ -142,12 +143,13 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         }
 
         th {
-            background-color: #df4adf;
+            background-color: #5d4037;
             color: white;
         }
 
         .update-btn {
             background-color: #e0ac0d;
+            border-radius: 10px;
         }
 
         .update-btn:hover {
@@ -156,6 +158,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
 
         .delete-btn {
             background-color: #dc3545;
+            border-radius: 10px;
         }
 
         .delete-btn:hover {
@@ -177,7 +180,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         }
 
         .pagination a.active {
-            background-color: #df4adf;
+            background-color: #5d4037;
             color: white;
         }
 
@@ -208,13 +211,13 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
 
         <table>
             <thead>
-                <tr>
+                <tr class="table-header text-center align-middle text-white bg-dark ">
                     <th>#</th>
                     <th>Category</th>
                     <th colspan="2">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-body text-center align-middle text-dark bg-light ">
                 <?php
                 $count = $offset + 1;
                 if (mysqli_num_rows($categoriesResult) === 0) {
