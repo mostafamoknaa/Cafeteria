@@ -27,19 +27,19 @@ $items_per_page = 5;
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $items_per_page;
 
-$date_from = isset($_GET['date_from']) ? $_GET['date_from'] : null;
-$date_to = isset($_GET['date_to']) ? $_GET['date_to'] : null;
+$date_from = isset($_GET['date_from']) ? $_GET['date_from'] : '';
+$date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
 
 $query = "SELECT * FROM orders WHERE user_id = ?";
 $params = [$user_id];
 $types = "i";
 
-if ($date_from) {
+if (!empty($date_from)) {
     $query .= " AND DATE(created_at) >= ?";
     $params[] = $date_from;
     $types .= "s";
 }
-if ($date_to) {
+if (!empty($date_to)) {
     $query .= " AND DATE(created_at) <= ?";
     $params[] = $date_to;
     $types .= "s";
@@ -49,12 +49,12 @@ $count_query = "SELECT COUNT(*) as total FROM orders WHERE user_id = ?";
 $count_params = [$user_id];
 $count_types = "i";
 
-if ($date_from) {
+if (!empty($date_from)) {
     $count_query .= " AND DATE(created_at) >= ?";
     $count_params[] = $date_from;
     $count_types .= "s";
 }
-if ($date_to) {
+if (!empty($date_to)) {
     $count_query .= " AND DATE(created_at) <= ?";
     $count_params[] = $date_to;
     $count_types .= "s";
@@ -88,6 +88,12 @@ function getOrderItems($conn, $order_id) {
     $stmt->close();
     return $items;
 }
+
+// Helper to rebuild query string
+function buildQuery($overrides = []) {
+    $params = array_merge($_GET, $overrides);
+    return http_build_query($params);
+}
 ?>
 
 <!DOCTYPE html>
@@ -99,8 +105,9 @@ function getOrderItems($conn, $order_id) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-   
+
     <style>
+        
         .order-card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px; overflow: hidden; }
         .order-header { background-color: #f8f9fa; padding: 15px; border-bottom: 1px solid #eee; }
         .order-body { padding: 15px; }
@@ -228,17 +235,17 @@ function getOrderItems($conn, $order_id) {
             <nav aria-label="Page navigation" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <li class="page-item <?= $current_page == 1 ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['page' => $current_page - 1])) ?>" aria-label="Previous">
+                        <a class="page-link" href="?<?= buildQuery(['page' => $current_page - 1]) ?>" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                     <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                         <li class="page-item <?= $i == $current_page ? 'active' : '' ?>">
-                            <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>"><?= $i ?></a>
+                            <a class="page-link" href="?<?= buildQuery(['page' => $i]) ?>"><?= $i ?></a>
                         </li>
                     <?php endfor; ?>
                     <li class="page-item <?= $current_page == $total_pages ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['page' => $current_page + 1])) ?>" aria-label="Next">
+                        <a class="page-link" href="?<?= buildQuery(['page' => $current_page + 1]) ?>" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
