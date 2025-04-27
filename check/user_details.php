@@ -36,7 +36,7 @@ $orders_result = $conn->query($orders_query);
     <title>Completed Orders for <?= htmlspecialchars($user['name']); ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
     <style>
-        .navbar { background-color: #5d4037 !important; }
+        .navbar { background-color: bisque !important; }
         body {
             padding: 20px;
             background-color: #f5f5f5;
@@ -45,8 +45,8 @@ $orders_result = $conn->query($orders_query);
             margin-bottom: 20px;
         }
         .card-header {
-            background-color: #5d4037;
-            color: white;
+            background-color: bisque;
+            color: black;
         }
         h1 {
             text-align: center;

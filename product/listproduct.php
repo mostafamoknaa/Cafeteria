@@ -40,289 +40,230 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
     <style>
-        :root {
-            --primary-color: #5d4037;
-            --secondary-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --text-color: #333;
-            --light-bg: #f8f9fa;
-            --border-color: #ddd;
-        }
+    .navbar {
+        background-color:bisque !important;
+        color: white !important;
+    }
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    .product-card {
+        background-color: white;
+        border: 1px solid var(--border-color, #eee);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-bg);
-            padding: 20px;
-        }
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
+    .product-image-container {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background: #f2f2f2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-        h1, h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
+    .no-image {
+        color: #aaa;
+        font-size: 24px;
+        text-align: center;
+    }
 
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s;
-        }
+    .product-info {
+        padding: 15px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-        .btn:hover {
-            background-color: #2980b9;
-        }
+    .product-info h3 {
+        font-size: 18px;
+        color: var(--primary-color, #333);
+        margin: 0;
+    }
 
-        .table-responsive {
-            overflow-x: auto;
-        }
+    .product-info .price {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+    .product-info .category {
+        font-size: 14px;
+        color: #777;
+    }
 
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            text-align: left;
-        }
+    .product-info .status {
+        margin-top: 5px;
+    }
 
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: auto;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    .action-buttons a,
+    .action-buttons button {
+        background-color: var(--primary-color, #ff8800);
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
 
-        .product-image {
-            max-width: 80px;
-            max-height: 80px;
-            border-radius: 4px;
-            object-fit: cover;
-        }
+    .action-buttons a:hover,
+    .action-buttons button:hover {
+        background-color: #d48806;
+    }
 
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
+    .delete-btn {
+        background-color: var(--danger-color, #e74c3c);
+    }
 
-        .action-buttons a {
-            color: var(--primary-color);
-            text-decoration: none;
-            padding: 5px;
-            border-radius: 4px;
-        }
+    .delete-btn:hover {
+        background-color: #c0392b;
+    }
 
-        .action-buttons a:hover {
-            background-color: #f1f1f1;
-        }
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 13px;
+        display: inline-block;
+        color: white;
+    }
 
-        .action-buttons a.delete {
-            color: var(--danger-color);
-        }
+    .badge-success {
+        background-color: #28a745;
+    }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .badge-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .badge-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .pagination a {
-            padding: 8px 12px;
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .pagination a.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .action-buttons a {
-                margin-bottom: 5px;
-            }
-
-            th, td {
-                padding: 8px;
-            }
-
-            .table-responsive {
-                overflow-x: auto;
-            }
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <header>
-        <h1><i class="fas fa-box"></i> Product Management</h1>
-        <a href="addproduct.php" class="btn">Add Product</a>
-    </header>
-    <div style="margin-bottom: 20px;">
-        <input type="text" id="searchInput" placeholder="Search products..." style="width: 20%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
-    </div>
-
-    <h2><i class="fas fa-list"></i> Product List</h2>
-    <div class="table-responsive">
-        <table id="productTable">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Category</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php if ($result->num_rows > 0): ?>
-                <?php while ($product = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td>
-                            <?php if ($product['image']): ?>
-                                <img src="../images/product/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="product-image">
-                            <?php else: ?>
-                                <div class="no-image"><i class="fas fa-image"></i> No image</div>
-                            <?php endif; ?>
-                        </td>
-                        <td><?= htmlspecialchars($product['name']) ?></td>
-                        <td>$<?= number_format($product['price'], 2) ?></td>
-                        <td>
-                            <?php if ($product['available']): ?>
-                                <span class="badge badge-success"><i class="fas fa-check"></i> Available</span>
-                            <?php else: ?>
-                                <span class="badge badge-danger"><i class="fas fa-times"></i> Not Available</span>
-                            <?php endif; ?>
-                        </td>
-                        <td><?= htmlspecialchars($product['category_name'] ?? 'No Category') ?></td>
-                        <td class="action-buttons">
-                            <a href="addproduct.php?edit=<?= $product['id'] ?>" title="Edit">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <form action="" method="post" style="display:inline;">
-                                <input type="hidden" name="delete_id" value="<?= $product['id'] ?>">
-                                <button type="submit" name="delete_product" class="btn" style="background-color: var(--danger-color); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr><td colspan="6" style="text-align: center;">No products found. Add your first product above.</td></tr>
-            <?php endif; ?>
-            </tbody>
-        </table>
-        <div class="pagination" id="pagination"></div>
-    </div>
+    .badge-danger {
+        background-color: #dc3545;
+    }
+</style>
+<div class="container mt-4">
+<div class="products-grid" id="productGrid">
+    <?php if ($result->num_rows > 0): ?>
+        <?php while ($product = $result->fetch_assoc()): ?>
+            <div class="product-card">
+                <div class="product-image-container">
+                    <?php if (!empty($product['image'])): ?>
+                        <img src="../images/product/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="product-image">
+                    <?php else: ?>
+                        <div class="no-image"><i class="fas fa-image"></i> No image</div>
+                    <?php endif; ?>
+                </div>
+                <div class="product-info">
+                    <h3><?= htmlspecialchars($product['name']) ?></h3>
+                    <p class="price">$<?= number_format($product['price'], 2) ?></p>
+                    <p class="category"><?= htmlspecialchars($product['category_name'] ?? 'No Category') ?></p>
+                    <p class="status">
+                        <?php if ($product['available']): ?>
+                            <span class="badge badge-success"><i class="fas fa-check"></i> Available</span>
+                        <?php else: ?>
+                            <span class="badge badge-danger"><i class="fas fa-times"></i> Not Available</span>
+                        <?php endif; ?>
+                    </p>
+                    <div class="action-buttons">
+                        <a href="addproduct.php?edit=<?= $product['id'] ?>" title="Edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <form action="" method="post" style="display:inline;">
+                            <input type="hidden" name="delete_id" value="<?= $product['id'] ?>">
+                            <button type="submit" name="delete_product" class="btn btn-danger delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p style="text-align:center;">No products found. Add your first product above.</p>
+    <?php endif; ?>
+</div>
 </div>
 <script>
-    const table = document.getElementById('productTable');
-    const rows = Array.from(table.getElementsByTagName('tbody')[0].rows);
-    const pagination = document.getElementById('pagination');
-    const rowsPerPage = 3;
-    let filteredRows = [...rows];
-    const searchInput = document.getElementById('searchInput');
+document.addEventListener('DOMContentLoaded', function () {
+    const products = Array.from(document.querySelectorAll('.product-card'));
+    const productsPerPage = 6;
+    const container = document.getElementById('productGrid');
 
-    function displayPage(page, rowsToShow) {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
+    let currentPage = 1;
+    let totalPages = Math.ceil(products.length / productsPerPage);
 
-        rows.forEach(row => row.style.display = 'none');
-        rowsToShow.slice(start, end).forEach(row => row.style.display = '');
+    function renderProducts() {
+        container.innerHTML = '';
 
-        pagination.innerHTML = '';
-        const pageCount = Math.ceil(rowsToShow.length / rowsPerPage);
+        const start = (currentPage - 1) * productsPerPage;
+        const end = start + productsPerPage;
+        const productsToShow = products.slice(start, end);
 
-        for (let i = 1; i <= pageCount; i++) {
-            const link = document.createElement('a');
-            link.textContent = i;
-            link.href = "#";
-            link.className = i === page ? 'active' : '';
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                displayPage(i, rowsToShow);
+        productsToShow.forEach(product => container.appendChild(product));
+
+        renderPagination();
+    }
+
+    function renderPagination() {
+        let paginationContainer = document.getElementById('pagination');
+        if (!paginationContainer) {
+            paginationContainer = document.createElement('div');
+            paginationContainer.id = 'pagination';
+            paginationContainer.style.textAlign = 'center';
+            paginationContainer.style.marginTop = '20px';
+            container.parentNode.appendChild(paginationContainer);
+        }
+
+        paginationContainer.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = i;
+            pageBtn.style.margin = '0 5px';
+            pageBtn.style.padding = '8px 12px';
+            pageBtn.style.border = 'none';
+            pageBtn.style.backgroundColor = i === currentPage ? '#ff8800' : '#ccc';
+            pageBtn.style.color = 'white';
+            pageBtn.style.borderRadius = '6px';
+            pageBtn.style.cursor = 'pointer';
+
+            pageBtn.addEventListener('click', () => {
+                currentPage = i;
+                renderProducts();
             });
-            pagination.appendChild(link);
+
+            paginationContainer.appendChild(pageBtn);
         }
     }
 
-    function filterRows() {
-        const searchTerm = searchInput.value.toLowerCase();
-        filteredRows = rows.filter(row => {
-            const cells = row.getElementsByTagName('td');
-            for (let cell of cells) {
-                if (cell.innerText.toLowerCase().includes(searchTerm)) {
-                    return true;
-                }
-            }
-            return false;
-        });
-        displayPage(1, filteredRows);
-    }
-
-    searchInput.addEventListener('input', filterRows);
-    displayPage(1, filteredRows);
+    renderProducts();
+});
 </script>
 
 </body>

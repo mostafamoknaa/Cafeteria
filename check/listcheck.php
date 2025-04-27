@@ -49,7 +49,7 @@ $totals_result = $conn->query($totals_query);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <title>Cafe Ordering System - Admin Orders</title>
     <style>
-         .navbar { background-color: #5d4037 !important; }
+         .navbar { background-color: bisque !important; }
         body {
             font-family: Arial, sans-serif;
             margin: 0;

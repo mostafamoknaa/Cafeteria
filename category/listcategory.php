@@ -76,6 +76,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            color: #333;
         }
 
         .main-container {
@@ -115,7 +116,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
             border: none;
             border-radius: 6px;
             color: white;
-            background-color: #5d4037;
+            background-color:rgb(241, 155, 50);
             cursor: pointer;
         }
 
@@ -139,10 +140,11 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
             padding: 12px;
             border: 1px solid #ccc;
             text-align: center;
+            color: #333;
         }
 
         th {
-            background-color: #5d4037;
+            background-color:rgb(235, 156, 61);
             color: white;
         }
 
@@ -179,7 +181,7 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
         }
 
         .pagination a.active {
-            background-color: #5d4037;
+            background-color: #ffe4c4;
             color: white;
         }
 

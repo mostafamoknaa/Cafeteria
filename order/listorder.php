@@ -72,9 +72,9 @@ $totalPages = ceil($totalOrders / $limit);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
   <style>
-     .navbar { background-color: #5d4037 !important; }
+     .navbar { background-color: bisque !important; }
     :root {
-      --primary-color: #5d4037;
+      --primary-color: bisque;
       --secondary-color: #2ecc71;
       --danger-color: #e74c3c;
       --text-color: #333;

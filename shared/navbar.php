@@ -16,7 +16,7 @@ $user1 = mysqli_fetch_assoc($result1);
     <title>Dashboard</title>
     <style>
         .navbar {
-            background-color: #5d4037 !important;
+            background-color:bisque !important;
             color: white !important;
         }
     </style>
