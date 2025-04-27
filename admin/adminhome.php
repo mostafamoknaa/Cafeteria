@@ -21,6 +21,16 @@
     .order-item { background-color: #f5f5f5; border-radius: 5px; margin-bottom: 10px; }
     .order-for-badge { background-color: #5d4037; color: white; }
     .user-selection { margin-bottom: 20px; padding: 15px; border-radius: 8px; background-color: #eee; }
+    .btn-bisque {
+    background-color: bisque !important;
+    border-color: bisque !important;
+    color: black !important;
+  }
+  .btn-bisque:hover {
+    background-color: #e3b98c !important;
+    border-color: #e3b98c !important;
+    color: black !important;
+  }
   </style>
 </head>
 <body>
@@ -131,7 +141,9 @@ if ($userresult) {
         $allusers[] = $row;
     }
 }
-
+$total = array_reduce($_SESSION['order_items'], function($sum, $item) {
+  return $sum + ($item['price'] * $item['quantity']);
+}, 0);
 
 $selected_user_id = $_SESSION['selected_user_id'];
 $selected_user = $conn->query("SELECT name FROM users WHERE id = $selected_user_id")->fetch_assoc();
@@ -192,7 +204,7 @@ $products = array_slice($all_products, $offset, $products_per_page);
                 <div class="d-flex align-items-center">
                   <span class="mx-2">x<?= $item['quantity'] ?></span>
                   <form method="post"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
-                    <button name="increase_qty" class="btn btn-sm btn-dark"><i class="fas fa-plus"></i></button></form>
+                    <button name="increase_qty" class="btn btn-sm  btn-bisque w-100"><i class="fas fa-plus"></i></button></form>
                   <form method="post" class="ms-2"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
                     <button name="remove_item" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button></form>
                 </div>
@@ -202,16 +214,23 @@ $products = array_slice($all_products, $offset, $products_per_page);
 
           <form method="post" class="mt-3">
             <textarea class="form-control mb-2" name="notes" placeholder="Add notes..."><?= htmlspecialchars($_SESSION['order_notes']) ?></textarea>
-            <button name="update_notes" class="btn btn-sm btn-outline-secondary">Update Notes</button>
+            <button name="update_notes" class="btn btn-bisque w-100 btn-sm">Update Notes</button>
           </form>
-          
+          <form method="post" class="mt-3">
+            <select name="room" class="form-select mb-2">
+              <?php foreach (["Room 101", "Room 102", "Room 103"] as $room): ?>
+                <option value="<?= $room ?>" <?= $_SESSION['order_room'] == $room ? 'selected' : '' ?>><?= $room ?></option>
+              <?php endforeach; ?>
+            </select>
+            <button name="update_room" class="btn btn-bisque w-100 btn-sm">Update Room</button>
+          </form>
           
           <div class="mt-3 text-end">
             <h5>Total: EGP <?= number_format($total, 2) ?></h5>
           </div>
           
           <form method="post">
-            <button name="confirm_order" class="btn btn-confirm w-100 mt-2 btn btn-outline-dark" <?= empty($_SESSION['order_items']) ? 'disabled' : '' ?>>
+            <button name="confirm_order" class="btn btn-confirm w-100 mt-2  btn-bisque w-100" <?= empty($_SESSION['order_items']) ? 'disabled' : '' ?>>
               <i class="fas fa-check"></i> Confirm Order for <?= htmlspecialchars($selected_user['name']) ?>
             </button>
           </form>
@@ -232,7 +251,7 @@ $products = array_slice($all_products, $offset, $products_per_page);
                 <?php endforeach; ?>
               </select>
             </div>
-            <button name="change_user" class="btn btn-outline-dark w-100">
+            <button name="change_user" class="btn btn-bisque w-100">
               <i class="fas fa-user-check"></i> Change Order Recipient
             </button>
           </form>
@@ -246,7 +265,7 @@ $products = array_slice($all_products, $offset, $products_per_page);
         <form class="mb-4" method="get">
           <div class="input-group">
             <input type="text" name="search" class="form-control" placeholder="Search menu..." value="<?= htmlspecialchars($search) ?>">
-            <button class="btn btn-outline-dark" type="submit"><i class="fas fa-search"></i> Search</button>
+            <button class="btn btn-bisque" type="submit"><i class="fas fa-search"></i> Search</button>
           </div>
         </form>
         <div class="card-body">
@@ -262,7 +281,7 @@ $products = array_slice($all_products, $offset, $products_per_page);
               <div class="card-body text-center">
                 <h6><?= htmlspecialchars($product['name']) ?></h6>
                 <p class="text-muted">EGP <?= number_format($product['price'], 2) ?></p>
-                <button name="add_item" class="btn btn-sm btn-outline-warning">
+                <button name="add_item" class="btn btn-bisque w-100">
                   <i class="fas fa-shopping-cart"></i> Add to Order
                 </button>
               </div>
