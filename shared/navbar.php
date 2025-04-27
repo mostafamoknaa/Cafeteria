@@ -1,11 +1,56 @@
 <?php
 
+// session_start();
+
+// $user_id1 = $_SESSION['user_id'];
+// $sql1 = "SELECT * FROM users WHERE id = $user_id1";
+// $result1 = mysqli_query($conn, $sql1);
+// $user1 = mysqli_fetch_assoc($result1);
+
+// 1. Always start session first
 session_start();
 
-$user_id1 = $_SESSION['user_id'];
-$sql1 = "SELECT * FROM users WHERE id = $user_id1";
-$result1 = mysqli_query($conn, $sql1);
-$user1 = mysqli_fetch_assoc($result1);
+// 2. Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+// 3. Verify database connection exists
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    die("Database connection error");
+}
+
+try {
+    // 4. Use prepared statement to prevent SQL injection
+    $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $conn->error);
+    }
+    
+    // 5. Bind parameters securely
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    
+    // 6. Execute and check result
+    if (!$stmt->execute()) {
+        throw new Exception("Execute failed: " . $stmt->error);
+    }
+    
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    
+    // 7. Verify user exists
+    if (!$user) {
+        session_destroy();
+        header('Location: login.php');
+        exit();
+    }
+    
+} catch (Exception $e) {
+    // 8. Proper error handling
+    error_log("Navbar error: " . $e->getMessage());
+    die("A system error occurred. Please try again later.");
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -2,30 +2,38 @@
 require_once('../connect.php');
 session_start();
 
-// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../shared/login.php');
     exit();
 }
 
+$selectedCurrency = 'EGP';
+
+function formatCurrency($amount) {
+    global $selectedCurrency;
+    $symbols = [
+        'EGP' => 'EGP',
+        'USD' => '$',
+        'EUR' => '€'
+    ];
+    $symbol = isset($symbols[$selectedCurrency]) ? $symbols[$selectedCurrency] : $selectedCurrency;
+    return $symbol . ' ' . number_format($amount, 2);
+}
+
 $user_id = $_SESSION['user_id'];
 $user = $conn->query("SELECT * FROM users WHERE id = $user_id")->fetch_assoc();
 
-// Pagination setup
 $items_per_page = 5;
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $items_per_page;
 
-// Date filtering
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : null;
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : null;
 
-// Build the base query
 $query = "SELECT * FROM orders WHERE user_id = ?";
 $params = [$user_id];
-$types = "i"; // integer for user_id
+$types = "i";
 
-// Add date filters if provided
 if ($date_from) {
     $query .= " AND DATE(created_at) >= ?";
     $params[] = $date_from;
@@ -37,7 +45,6 @@ if ($date_to) {
     $types .= "s";
 }
 
-// Count total orders for pagination
 $count_query = "SELECT COUNT(*) as total FROM orders WHERE user_id = ?";
 $count_params = [$user_id];
 $count_types = "i";
@@ -61,7 +68,6 @@ $stmt->close();
 
 $total_pages = ceil($total_orders / $items_per_page);
 
-// Get orders with pagination
 $query .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
 $params[] = $items_per_page;
 $params[] = $offset;
@@ -73,12 +79,8 @@ $stmt->execute();
 $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// Function to get order items
 function getOrderItems($conn, $order_id) {
-    $query = "SELECT op.*, p.name as product_name 
-              FROM order_products op
-              JOIN products p ON op.product_id = p.id
-              WHERE op.order_id = ?";
+    $query = "SELECT op.*, p.name as product_name FROM order_products op JOIN products p ON op.product_id = p.id WHERE op.order_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
@@ -98,67 +100,31 @@ function getOrderItems($conn, $order_id) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
    
-   <style>
-        .order-card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        .order-header {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .order-body {
-            padding: 15px;
-        }
-        .status-processing {
-            color: #ffc107;
-            font-weight: bold;
-        }
-        .status-out {
-            color: #0dcaf0;
-            font-weight: bold;
-        }
-        .status-completed {
-            color: #198754;
-            font-weight: bold;
-        }
-        .status-cancelled {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        .item-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .item-list li {
-            padding: 5px 0;
-            border-bottom: 1px dashed #eee;
-        }
-        .pagination .page-item.active .page-link {
-            background-color: #5d4037;
-            border-color: #5d4037;
-        }
-        .navbar {
-            background-color: #5d4037 !important;
-        }
-        .user-image {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+    <style>
+        .order-card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px; overflow: hidden; }
+        .order-header { background-color: #f8f9fa; padding: 15px; border-bottom: 1px solid #eee; }
+        .order-body { padding: 15px; }
+        .status-processing { color: #ffc107; font-weight: bold; }
+        .status-out { color: #0dcaf0; font-weight: bold; }
+        .status-completed { color: #198754; font-weight: bold; }
+        .status-cancelled { color: #dc3545; font-weight: bold; }
+        .item-list { list-style-type: none; padding-left: 0; }
+        .item-list li { padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .pagination .page-item.active .page-link { background-color: #5d4037; border-color: #5d4037; }
+        .navbar { background-color: #5d4037 !important; }
+        .user-image { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="#">Cafe Order System</a>
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="عسثقhome.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="userhome.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" href="my_orders.php">My Orders</a></li>
                 </ul>
             </div>
@@ -181,7 +147,6 @@ function getOrderItems($conn, $order_id) {
     <div class="container mt-4">
         <h2 class="mb-4">My Orders</h2>
 
-        <!-- Date Filters -->
         <form method="get" class="mb-4">
             <div class="row g-3">
                 <div class="col-md-4">
@@ -199,17 +164,18 @@ function getOrderItems($conn, $order_id) {
             </div>
         </form>
 
-        <!-- Orders List -->
         <?php if (empty($orders)): ?>
             <div class="alert alert-info">No orders found.</div>
         <?php else: ?>
+            <?php $totalPriceThisPage = 0; ?>
             <?php foreach ($orders as $order): ?>
                 <?php $items = getOrderItems($conn, $order['id']); ?>
+                <?php $totalPriceThisPage += $order['total']; ?>
                 <div class="order-card">
                     <div class="order-header">
                         <div class="row">
                             <div class="col-md-4">
-                                <strong>Order #<?= $order['id'] ?></strong>
+                                <strong>Order Date</strong>
                                 <p><?= date('Y/m/d h:i A', strtotime($order['created_at'])) ?></p>
                             </div>
                             <div class="col-md-4">
@@ -220,7 +186,7 @@ function getOrderItems($conn, $order_id) {
                             </div>
                             <div class="col-md-4 text-end">
                                 <strong>Amount</strong>
-                                <p>EGP <?= number_format($order['total'], 2) ?></p>
+                                <p><?= formatCurrency($order['total']) ?></p>
                             </div>
                         </div>
                     </div>
@@ -236,7 +202,7 @@ function getOrderItems($conn, $order_id) {
                             <li>
                                 <div class="d-flex justify-content-between">
                                     <span><?= htmlspecialchars($item['product_name']) ?></span>
-                                    <span><?= $item['quantity'] ?> x EGP <?= number_format($item['price'], 2) ?></span>
+                                    <span><?= $item['quantity'] ?> x <?= formatCurrency($item['price']) ?></span>
                                 </div>
                             </li>
                             <?php endforeach; ?>
@@ -252,9 +218,12 @@ function getOrderItems($conn, $order_id) {
                     </div>
                 </div>
             <?php endforeach; ?>
+
+            <div class="text-end mt-4">
+                <h5>Total This Page: <?= formatCurrency($totalPriceThisPage) ?></h5>
+            </div>
         <?php endif; ?>
 
-        <!-- Pagination -->
         <?php if ($total_pages > 1): ?>
             <nav aria-label="Page navigation" class="mt-4">
                 <ul class="pagination justify-content-center">
@@ -277,6 +246,5 @@ function getOrderItems($conn, $order_id) {
             </nav>
         <?php endif; ?>
     </div>
-
 </body>
 </html>
