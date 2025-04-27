@@ -8,16 +8,29 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { background-color: #f8f9fa; }
-    .navbar { background-color: #5d4037 !important; }
+    .navbar { background-color: bisque !important; }
     .menu-item { transition: transform 0.2s; cursor: pointer; }
     .menu-item:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .product-icon { height: 80px; display: flex; align-items: center; justify-content: center; }
-    .btn-confirm { background-color: #5d4037; color: white; }
-    .btn-confirm:hover { background-color: #4e342e; }
+    .btn-confirm { background-color: bisque; color: white; }
+    .btn-confirm:hover { background-color: #e3b98c; }
     .order-item { background-color: #f5f5f5; border-radius: 5px; margin-bottom: 10px; }
+    .pagination { justify-content: center; margin-top: 20px; }
+    .search-box { margin-bottom: 20px; }
+    .btn-bisque {
+    background-color: bisque;
+    border-color: bisque;
+    color: black;
+  }
+  .btn-bisque:hover {
+    background-color: #e3b98c;
+    border-color: #e3b98c;
+    color: black;
+  }
   </style>
 </head>
 <body>
+
 <?php
 require_once('../connect.php');
 session_start();
@@ -33,6 +46,7 @@ $user = $conn->query("SELECT * FROM users WHERE id = $user_id")->fetch_assoc();
 if (!isset($_SESSION['order_items'])) {
   $_SESSION['order_items'] = [];
   $_SESSION['order_notes'] = '';
+  $_SESSION['order_room'] = 'Room 101';
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -94,11 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   exit();
 }
 
-$products = $conn->query("SELECT * FROM products where available = 1")->fetch_all(MYSQLI_ASSOC);
+$products = $conn->query("SELECT * FROM products WHERE available = 1")->fetch_all(MYSQLI_ASSOC);
 $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
     <a class="navbar-brand" href="#">Cafeteria</a>
     <div class="collapse navbar-collapse">
@@ -108,36 +122,35 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
       </ul>
     </div>
     <div class="dropdown">
-  <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <?php if (!empty($user['picture'])): ?>
-      <img src="../images/<?= htmlspecialchars($user['picture']) ?>" width="30" height="30" class="rounded-circle me-2">
-    <?php else: ?>
-      <i class="fas fa-user-circle me-2 fs-5"></i>
-    <?php endif; ?>
-    <span><?= htmlspecialchars($user['name']) ?></span>
-  </a>
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-    <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item text-danger" href="../shared/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-  </ul>
-</div>
-
+      <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <?php if (!empty($user['picture'])): ?>
+          <img src="../images/<?= htmlspecialchars($user['picture']) ?>" width="30" height="30" class="rounded-circle me-2">
+        <?php else: ?>
+          <i class="fas fa-user-circle me-2 fs-5"></i>
+        <?php endif; ?>
+        <span><?= htmlspecialchars($user['name']) ?></span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="../shared/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+      </ul>
+    </div>
   </div>
 </nav>
 
 <?php if (isset($_SESSION['order_success'])): ?>
-<div class="alert alert-success container mt-3"> <?= $_SESSION['order_success'] ?> </div>
+<div class="alert alert-success container mt-3"><?= $_SESSION['order_success'] ?></div>
 <?php unset($_SESSION['order_success']); endif; ?>
 
 <?php if (isset($_SESSION['order_error'])): ?>
-<div class="alert alert-danger container mt-3"> <?= $_SESSION['order_error'] ?> </div>
+<div class="alert alert-danger container mt-3"><?= $_SESSION['order_error'] ?></div>
 <?php unset($_SESSION['order_error']); endif; ?>
 
 <div class="container mt-4">
   <div class="row">
     <!-- Current Order -->
-    <div class="col-md-4">
+    <div class="col-md-4 mb-4">
       <div class="card">
         <div class="card-header">Current Order</div>
         <div class="card-body">
@@ -158,7 +171,7 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
           <?php endforeach; ?>
           <form method="post" class="mt-3">
             <textarea class="form-control mb-2" name="notes" placeholder="Add notes..."><?= htmlspecialchars($_SESSION['order_notes']) ?></textarea>
-            <button name="update_notes" class="btn btn-sm btn-outline-secondary">Update Notes</button>
+            <button name="update_notes" class="btn btn-sm btn-bisque w-100">Update Notes</button>
           </form>
           <form method="post" class="mt-3">
             <select name="room" class="form-select mb-2">
@@ -166,7 +179,7 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
                 <option value="<?= $room ?>" <?= $_SESSION['order_room'] == $room ? 'selected' : '' ?>><?= $room ?></option>
               <?php endforeach; ?>
             </select>
-            <button name="update_room" class="btn btn-sm btn-outline-secondary">Update Room</button>
+            <button name="update_room" class="btn btn-sm btn-bisque w-100">Update Room</button>
           </form>
           <div class="mt-3 text-end">
             <h5>Total: EGP <?= number_format($total, 2) ?></h5>
@@ -179,12 +192,14 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
         </div>
       </div>
     </div>
+
     <!-- Menu Items -->
     <div class="col-md-8">
       <h4>Menu</h4>
-      <div class="row row-cols-1 row-cols-md-3 g-4">
+      <input type="text" id="searchInput" class="form-control search-box" placeholder="Search for products...">
+      <div class="row row-cols-1 row-cols-md-3 g-4" id="productsContainer">
         <?php foreach ($products as $product): ?>
-        <div class="col">
+        <div class="col product-card">
           <form method="post">
             <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
             <div class="card menu-item">
@@ -192,10 +207,10 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
                 <img src="../images/product/<?= htmlspecialchars($product['image']) ?>" width="50" height="50">
               </div>
               <div class="card-body text-center">
-                <h6><?= htmlspecialchars($product['name']) ?></h6>
+                <h6 class="product-name"><?= htmlspecialchars($product['name']) ?></h6>
                 <p class="text-muted">EGP <?= number_format($product['price'], 2) ?></p>
-                <button name="add_item" class="btn btn-sm btn-outline-secondary">
-                  <i class="fas fa-plus"></i> Add to Order
+                <button name="add_item" class="btn btn-sm btn-bisque">
+                  <i class="fas fa-shopping-cart"></i> Add to Order
                 </button>
               </div>
             </div>
@@ -203,9 +218,70 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
         </div>
         <?php endforeach; ?>
       </div>
+      <nav>
+        <ul class="pagination" id="pagination"></ul>
+      </nav>
     </div>
   </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Pagination and search
+const itemsPerPage = 6;
+let currentPage = 1;
+
+function filterProducts() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    const name = card.querySelector('.product-name').textContent.toLowerCase();
+    card.dataset.visible = name.includes(search) ? 'true' : 'false';
+  });
+  currentPage = 1;
+  paginateProducts();
+}
+
+function paginateProducts() {
+  const cards = document.querySelectorAll('.product-card');
+  const visibleCards = Array.from(cards).filter(c => c.dataset.visible === 'true');
+  const totalPages = Math.ceil(visibleCards.length / itemsPerPage);
+
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = '';
+
+  if (totalPages > 1) {
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<button class="page-link" type="button">${i}</button>`;
+      li.addEventListener('click', () => {
+        currentPage = i;
+        showPage();
+      });
+      pagination.appendChild(li);
+    }
+  }
+  showPage();
+}
+
+function showPage() {
+  const cards = document.querySelectorAll('.product-card');
+  const visibleCards = Array.from(cards).filter(c => c.dataset.visible === 'true');
+  visibleCards.forEach((card, idx) => {
+    card.style.display = (idx >= (currentPage - 1) * itemsPerPage && idx < currentPage * itemsPerPage) ? '' : 'none';
+  });
+}
+
+document.getElementById('searchInput').addEventListener('input', filterProducts);
+
+window.onload = () => {
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => card.dataset.visible = 'true');
+  filterProducts();
+};
+</script>
+
+
 </body>
 </html>
