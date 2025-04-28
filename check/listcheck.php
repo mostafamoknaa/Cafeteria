@@ -30,12 +30,17 @@ while ($user = $users_result->fetch_assoc()) {
 }
 
 
+$limit = 2;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max($page, 1); 
+$offset = ($page - 1) * $limit;
 $totals_query = "SELECT u.name, u.id, SUM(o.total) as total 
                  FROM orders o 
                  JOIN users u ON o.user_id = u.id 
                  WHERE $where
                  GROUP BY u.id 
-                 ORDER BY total DESC";
+                 ORDER BY total DESC
+                 LIMIT $limit OFFSET $offset"; 
 $totals_result = $conn->query($totals_query);
 
 
@@ -46,6 +51,15 @@ $overall_query = "SELECT SUM(o.total) as grand_total
 $overall_result = $conn->query($overall_query);
 $overall_row = $overall_result->fetch_assoc();
 $grand_total = $overall_row['grand_total'] ?? 0;
+
+$count_query = "SELECT COUNT(DISTINCT u.id) as total_users
+                FROM orders o 
+                JOIN users u ON o.user_id = u.id 
+                WHERE $where";
+$count_result = $conn->query($count_query);
+$count_row = $count_result->fetch_assoc();
+$total_users = $count_row['total_users'];
+$total_pages = ceil($total_users / $limit);
 
 ?>
 <?php include "../shared/navbar.php"; ?>
@@ -225,6 +239,35 @@ $grand_total = $overall_row['grand_total'] ?? 0;
     <div class="total-summary">
         Total Sales: <?= number_format($grand_total, 2) ?> EGP
     </div>
+    <div class="mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+
+            <?php if ($page > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?= $page - 1 ?>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; Prev</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <?php if ($page < $total_pages): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?= $page + 1 ?>" aria-label="Next">
+                        <span aria-hidden="true">Next &raquo;</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+        </ul>
+    </nav>
+</div>
 
 </div>
 

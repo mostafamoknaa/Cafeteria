@@ -92,7 +92,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
         .btn {
             display: inline-block;
             padding: 10px 20px;
-            background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 4px;
@@ -104,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
         }
 
         .btn:hover {
-            background-color: #2980b9;
+            background-color:red;
         }
 
         .table-responsive {
@@ -267,10 +266,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
                             </a>
                             <form action="" method="post" style="display:inline;">
                                 <input type="hidden" name="delete_id" value="<?= $product['id'] ?>">
-                                <button type="submit" name="delete_product" class="btn" style="background-color: var(--danger-color); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                                <button type="button" class="btn btn-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#confirmDeleteModal" 
+                                        data-delete-id="<?= $product['id'] ?>">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </form>
+                            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                <form method="post" action="">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    
+                                    <div class="modal-body">
+                                    Are you sure you want to delete this product?
+                                    <input type="hidden" name="delete_id" id="modalDeleteId" value="">
+                                    </div>
+                                    
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" name="delete_product" class="btn btn-danger">Yes, Delete</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                            </div>
+
                         </td>
                     </tr>
                 <?php endwhile; ?>
@@ -283,6 +308,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
     </div>
 </div>
 <script>
+      const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+  confirmDeleteModal.addEventListener('show.bs.modal', event => {
+    const button = event.relatedTarget;
+    const deleteId = button.getAttribute('data-delete-id');
+    const modalDeleteIdInput = document.getElementById('modalDeleteId');
+    modalDeleteIdInput.value = deleteId;
+  });
+
     const table = document.getElementById('productTable');
     const rows = Array.from(table.getElementsByTagName('tbody')[0].rows);
     const pagination = document.getElementById('pagination');
