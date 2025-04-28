@@ -237,17 +237,43 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
                         echo "<td>" . htmlspecialchars($row["name"]) . "</td>";
                         echo "<td><button class='update-btn' type='button' onclick=\"editCategory('" . $row['id'] . "', '" . htmlspecialchars($row['name'], ENT_QUOTES) . "')\">Edit</button></td>";
                         echo "<td>
-                                <form method='POST' style='display:inline; margin:0; padding:0;'>
-                                    <input type='hidden' name='categoryId' value='" . $row['id'] . "'>
-                                    <button type='submit' name='delbtn' class='delete-btn'>Delete</button>
-                                </form>
-                            </td>";
+                        <form method='POST' id='deleteForm_" . $row['id'] . "' style='display:inline; margin:0; padding:0;'>
+                            <input type='hidden' name='categoryId' value='" . $row['id'] . "'>
+                            <input type='hidden' name='delbtn' value='1'> 
+                            <button type='button' class='btn btn-danger' onclick='confirmDelete(" . $row['id'] . ")'>Delete</button>
+                        </form>
+                    </td>";
+                    
+                    
+                    
                         echo "</tr>";
                     }
                 }
                 ?>
             </tbody>
         </table>
+        
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+                Are you sure you want to delete this category?
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+            
+            </div>
+        </div>
+        </div>
 
         <?php if ($totalPages > 1): ?>
         <div class="pagination">
@@ -278,6 +304,17 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
             }
             return true;
         }
+        let deleteFormId = '';
+
+        function confirmDelete(formId) {
+            deleteFormId = 'deleteForm_' + formId;
+            var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'), {});
+            myModal.show();
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            document.getElementById(deleteFormId).submit();
+        });
     </script>
 </body>
 </html>

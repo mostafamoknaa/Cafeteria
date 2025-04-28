@@ -15,7 +15,7 @@
     
     .menu-item { transition: transform 0.2s; cursor: pointer; }
     .menu-item:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .product-icon { height: 80px; display: flex; align-items: center; justify-content: center; }
+    .product-icon { width: 100%;  height: 80px; display: flex; align-items: center; justify-content: center;}
     .btn-confirm { background-color: bisque; color: white; }
     .btn-confirm:hover { background-color: bisque; }
     .order-item { background-color: #f5f5f5; border-radius: 5px; margin-bottom: 10px; }
@@ -317,7 +317,7 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
             <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
             <div class="card menu-item h-100">
               <div class="product-icon">
-                <img src="../images/product/<?= htmlspecialchars($product['image']) ?>" width="50" height="50" alt="<?= htmlspecialchars($product['name']) ?>">
+                <img src="../images/product/<?= htmlspecialchars($product['image']) ?>" width="100" height="80" alt="<?= htmlspecialchars($product['name']) ?> " class="img-fluid rounded ">
               </div>
               <div class="card-body text-center">
                 <h6><?= htmlspecialchars($product['name']) ?></h6>
