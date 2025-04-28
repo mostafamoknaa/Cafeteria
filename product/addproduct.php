@@ -116,12 +116,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
   <style>
     :root {
-      --primary-color: #3498db;
-      --secondary-color: #2ecc71;
-      --danger-color: #e74c3c;
-      --text-color: #333;
+      --primary-color: #D8AC9F;
+      --primary-hover: #C28D7A;
+      --text-color: #5d4037;
       --light-bg: #f8f9fa;
-      --border-color: #ddd;
+      --border-color: #D8AC9F;
+      --error-color: #e74c3c;
+      --success-color: #27ae60;
     }
 
     * {
@@ -149,12 +150,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     .card {
       background-color: white;
       border-radius: 8px;
+      border: 1px solid var(--border-color);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       padding: 25px;
     }
 
     h2 {
-      color: var(--primary-color);
+      color: var(--text-color);
       margin-bottom: 20px;
       text-align: center;
     }
@@ -167,6 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
+      color: var(--text-color);
     }
 
     input[type="text"],
@@ -177,6 +180,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       border: 1px solid var(--border-color);
       border-radius: 4px;
       font-size: 16px;
+      color: var(--text-color);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-hover);
+      box-shadow: 0 0 0 0.2rem rgba(216, 172, 159, 0.25);
+      outline: none;
     }
 
     .checkbox-group {
@@ -204,25 +214,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       display: inline-block;
       padding: 10px 20px;
       background-color: var(--primary-color);
-      color: white;
+      color: var(--text-color);
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
       text-align: center;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      font-weight: 500;
     }
 
     .btn:hover {
-      background-color: #2980b9;
+      background-color: var(--primary-hover);
+      color: white;
     }
 
     .btn-success {
-      background-color: var(--secondary-color);
+      background-color: var(--primary-color);
     }
 
     .btn-success:hover {
-      background-color: #27ae60;
+      background-color: var(--primary-hover);
     }
 
     .btn + .btn {
@@ -238,18 +250,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     .alert-success {
-      background-color: var(--secondary-color);
+      background-color: var(--success-color);
     }
 
     .alert-danger {
-      background-color: var(--danger-color);
+      background-color: var(--error-color);
     }
 
-    .alert ul {
-      margin-left: 20px;
-    }
-        .error {
-      color: var(--danger-color);
+    .error {
+      color: var(--error-color);
       font-size: 14px;
       margin-top: 4px;
     }
@@ -288,7 +297,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       </div>
 
       <div class="form-group">
-        <label for="price">Price ($):</label>
+        <label for="price">Price:</label>
         <input type="number" id="price" name="price" value="<?= htmlspecialchars($price) ?>" step="0.01" min="0" required>
         <?php if ($errors["price"]): ?><div class="error"><?= $errors["price"] ?></div><?php endif; ?>
       </div>
@@ -328,7 +337,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <i class="fas fa-save"></i> <?= isset($_GET['edit']) ? 'Update Product' : 'Add Product' ?>
         </button>
         <?php if (isset($_GET['edit'])): ?>
-          <a href="listproduct.php" class="btn">Cancel</a>
+          <a href="listproduct.php" class="btn" style="background-color: #f8f9fa; border: 1px solid var(--border-color);">Cancel</a>
         <?php endif; ?>
       </div>
     </form>

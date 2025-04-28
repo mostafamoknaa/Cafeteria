@@ -8,11 +8,9 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
 $orders = [];
 $user_id = $_SESSION['user_id'] ?? null;
 
-
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 5;
 $offset = ($page - 1) * $limit;
-
 
 $sql = "SELECT o.*, u.name AS user_name FROM orders o LEFT JOIN users u ON o.user_id = u.id WHERE 1=1";
 if ($startDate) {
@@ -72,19 +70,71 @@ $totalPages = ceil($totalOrders / $limit);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
   <style>
-     .navbar { background-color: bisque !important; }
-    :root {
-      --primary-color: bisque;
-      --secondary-color: #2ecc71;
-      --danger-color: #e74c3c;
-      --text-color: #333;
-      --light-bg: #f8f9fa;
-      --border-color: #ddd;
+    .navbar { 
+      background-color: #D8AC9F !important;
+      color: #5d4037 !important;
+    }
+    body {
+      background-color: #f8f9fa;
+      color: #5d4037;
+    }
+    .card {
+      border: 1px solid #D8AC9F;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background-color: #D8AC9F !important;
+      color: #5d4037 !important;
+      font-weight: bold;
+      border-bottom: 1px solid #C28D7A;
+    }
+    .btn-primary {
+      background-color: #D8AC9F;
+      border-color: #D8AC9F;
+      color: #5d4037;
+      font-weight: 500;
+    }
+    .btn-primary:hover {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: #5d4037;
+    }
+    .btn-secondary {
+      background-color: #f8f9fa;
+      border-color: #D8AC9F;
+      color: #5d4037;
+      font-weight: 500;
+    }
+    .btn-secondary:hover {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: white;
+    }
+    .btn-info {
+      background-color: #D8AC9F;
+      border-color: #D8AC9F;
+      color: #5d4037;
+    }
+    .btn-info:hover {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: #5d4037;
+    }
+    .btn-warning {
+      background-color: #f8f9fa;
+      border-color: #D8AC9F;
+      color: #5d4037;
+    }
+    .btn-warning:hover {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: white;
     }
     .status-badge {
-      padding: 0.25rem 0.5rem;
+      padding: 0.35rem 0.65rem;
       border-radius: 12px;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 500;
       text-transform: capitalize;
     }
@@ -92,14 +142,50 @@ $totalPages = ceil($totalOrders / $limit);
     .status-processing { background: #cce5ff; color: #004085; }
     .status-completed { background: #d4edda; color: #155724; }
     .status-cancelled { background: #f8d7da; color: #721c24; }
+    .table {
+      border-color: #D8AC9F;
+    }
+    .table thead th {
+      background-color: #D8AC9F;
+      color: #5d4037;
+      border-color: #C28D7A;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: rgba(216, 172, 159, 0.1);
+    }
+    .table-hover tbody tr:hover {
+      background-color: rgba(216, 172, 159, 0.2);
+    }
+    .page-item.active .page-link {
+      background-color: #D8AC9F;
+      border-color: #D8AC9F;
+      color: #5d4037;
+    }
+    .page-link {
+      color: #5d4037;
+      border-color: #D8AC9F;
+    }
+    .page-link:hover {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: white;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #D8AC9F;
+      box-shadow: 0 0 0 0.25rem rgba(216, 172, 159, 0.25);
+    }
+    .alert-info {
+      background-color: rgba(216, 172, 159, 0.2);
+      border-color: #D8AC9F;
+      color: #5d4037;
+    }
   </style>
 </head>
 <body>
-<div class="container">
-<div class="container-fluid mt-4">
+<div class="container mt-4">
   <div class="row">
     <div class="col-md-3">
-      <div class="card">
+      <div class="card mb-4">
         <div class="card-header">
           <h5>Order Filters</h5>
         </div>
@@ -123,8 +209,10 @@ $totalPages = ceil($totalOrders / $limit);
                 <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary">Apply Filters</button>
-            <a href="listorder.php" class="btn btn-secondary">Reset</a>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">Apply Filters</button>
+              <a href="listorder.php" class="btn btn-secondary">Reset</a>
+            </div>
           </form>
         </div>
       </div>
@@ -137,10 +225,10 @@ $totalPages = ceil($totalOrders / $limit);
         </div>
         <div class="card-body">
           <?php if (empty($orders)): ?>
-            <div class="alert alert-info">No orders found</div>
+            <div class="alert alert-info text-center">No orders found</div>
           <?php else: ?>
             <div class="table-responsive">
-              <table class="table table-striped">
+              <table class="table table-striped table-hover">
                 <thead>
                   <tr>
                     <th>Order ID</th>
@@ -149,7 +237,7 @@ $totalPages = ceil($totalOrders / $limit);
                     <th>Items</th>
                     <th>Total</th>
                     <th>Status</th>
-                    <th col="2" class="text-center">Actions</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -165,11 +253,13 @@ $totalPages = ceil($totalOrders / $limit);
                           <?= ucfirst($order['status']) ?>
                         </span>
                       </td>
-                      <td>
-                        <a href="order_details.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-info">View</a>
-                      </td>
-                      <td>
-                        <a href="edit_order.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                      <td class="d-flex gap-2">
+                        <a href="order_details.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-info">
+                          <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="edit_order.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-warning">
+                          <i class="fas fa-edit"></i> Edit
+                        </a>
                       </td>
                     </tr>
                   <?php endforeach; ?>
@@ -179,7 +269,7 @@ $totalPages = ceil($totalOrders / $limit);
 
             <?php if ($totalPages > 1): ?>
               <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
+                <ul class="pagination justify-content-center mt-4">
                   <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                     <li class="page-item <?= $i == $page ? 'active' : '' ?>">
                       <a class="page-link" href="?page=<?= $i ?>&start_date=<?= urlencode($startDate) ?>&end_date=<?= urlencode($endDate) ?>&status=<?= urlencode($status) ?>">
@@ -196,9 +286,7 @@ $totalPages = ceil($totalOrders / $limit);
     </div>
   </div>
 </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

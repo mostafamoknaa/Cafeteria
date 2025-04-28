@@ -105,13 +105,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f8f9fa;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px #D8AC9F;
+            ;
         }
 
         .form-title {
-            color: #0d6efd;
+            color: #D8AC9F;
             margin-bottom: 20px;
             font-weight: 600;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #D8AC9F;
+            box-shadow: 0 0 0 0.25rem rgba(216, 172, 159, 0.5);
+        }
+
+        .form-control,
+        .form-select {
+            box-shadow: 0 2px 6px #D8AC9F;
         }
     </style>
 </head>
@@ -168,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="text-center">
-                <button class="btn btn-primary" type="submit" name="submit">Submit</button>
+                <button class="btn" style="background-color:  #D8AC9F;" type="submit" name="submit">Submit</button>
             </div>
         </form>
     </div>

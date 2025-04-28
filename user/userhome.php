@@ -8,25 +8,71 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { background-color: #f8f9fa; }
-    .navbar { background-color: bisque !important; }
+    .navbar { 
+      background-color: #D8AC9F !important;
+      color: #5d4037 !important;
+    }
+    .navbar-brand,
+    .nav-link {
+      color: #5d4037 !important;
+    }
+    .navbar-brand:hover,
+    .nav-link:hover {
+      color: #3e2723 !important;
+    }
     .menu-item { transition: transform 0.2s; cursor: pointer; }
     .menu-item:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .product-icon { height: 80px; display: flex; align-items: center; justify-content: center; }
-    .btn-confirm { background-color: bisque; color: white; }
-    .btn-confirm:hover { background-color: #e3b98c; }
+    .btn-confirm { 
+      background-color: #D8AC9F;
+      color: #5d4037;
+      border-color: #D8AC9F;
+    }
+    .btn-confirm:hover { 
+      background-color: #C28D7A;
+      color: #5d4037;
+    }
     .order-item { background-color: #f5f5f5; border-radius: 5px; margin-bottom: 10px; }
-    .pagination { justify-content: center; margin-top: 20px; }
+    .pagination { justify-content: center; margin-top: 20px; color: white;}
     .search-box { margin-bottom: 20px; }
     .btn-bisque {
-    background-color: bisque;
-    border-color: bisque;
-    color: black;
-  }
-  .btn-bisque:hover {
-    background-color: #e3b98c;
-    border-color: #e3b98c;
-    color: black;
-  }
+      background-color: #D8AC9F;
+      border-color: #D8AC9F;
+      color: #5d4037;
+    }
+    .btn-reset {
+      background-color: white;
+      border-color: #D8AC9F;
+      color: #5d4037;
+    }
+    .btn-bisque:hover {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: #5d4037;
+    }
+    .dropdown-menu {
+      background-color: #D8AC9F;
+      border-color: #C28D7A;
+    }
+    .dropdown-item {
+      color: #5d4037;
+    }
+    .dropdown-item:hover {
+      background-color: #C28D7A;
+    }
+    .card-header {
+      background-color: #D8AC9F;
+      color: #5d4037;
+    }
+    .page-link {
+      background-color: #D8AC9F;
+      border-color: #D8AC9F;
+      color: #5d4037;
+    }
+    .page-item.active .page-link {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+    }
   </style>
 </head>
 <body>
@@ -146,14 +192,22 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
 <nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
     <a class="navbar-brand" href="#">Cafeteria</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav">
+    <!-- Add navbar toggler button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars" style="color: #5d4037;"></i> <!-- Brown collapse icon -->
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="my_orders.php">My Orders</a></li>
       </ul>
     </div>
+    
     <div class="dropdown">
-      <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" 
+         data-bs-toggle="dropdown" aria-expanded="false" style="color: #5d4037;"> 
         <?php if (!empty($user['picture'])): ?>
           <img src="../images/<?= htmlspecialchars($user['picture']) ?>" width="30" height="30" class="rounded-circle me-2">
         <?php else: ?>
@@ -162,7 +216,8 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
         <span><?= htmlspecialchars($user['name']) ?></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-        <li><a class="dropdown-item text-danger" href="../shared/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+        <li><a class="dropdown-item" href="../shared/logout.php" > 
+          <i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
       </ul>
     </div>
   </div>
@@ -245,7 +300,7 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
                 <button type="submit" class="btn btn-bisque w-100">Filter</button>
               </div>
               <div class="col-md-6">
-                <button type="button" class="btn btn-bisque w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
+                <button type="button" class="btn btn-reset w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
               </div>
             </div>
           </div>
@@ -274,7 +329,7 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
       </div>
       <div class="mt-4 d-flex justify-content-center">
         <nav>
-          <ul class="pagination">
+          <ul class="pagination" >
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
               <li class="page-item  <?= $i == $page ? 'active' : '' ?>">
                 <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
@@ -326,7 +381,6 @@ function paginateProducts() {
   }
   showPage();
 }
-
 function showPage() {
   const cards = document.querySelectorAll('.product-card');
   const visibleCards = Array.from(cards).filter(c => c.dataset.visible === 'true');
@@ -346,4 +400,4 @@ window.onload = () => {
 
 
 </body>
-</html>
+</html> 

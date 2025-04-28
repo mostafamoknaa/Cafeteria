@@ -123,23 +123,161 @@ $order_statuses = ['Processing', 'Out for Delivery', 'Completed', 'Cancelled'];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        .order-card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px; overflow: hidden; }
-        .order-header { background-color: #f8f9fa; padding: 15px; border-bottom: 1px solid #eee; }
-        .order-body { padding: 15px; }
+        :root {
+            --primary-color: #D8AC9F;
+            --primary-hover: #C28D7A;
+            --text-color: #5d4037;
+            --light-bg: #f8f9fa;
+            --border-color: #D8AC9F;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-inset: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar { 
+            background-color: var(--primary-color) !important;
+            color: var(--text-color) !important;
+            box-shadow: var(--shadow-md);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color) !important;
+        }
+
+        .nav-link {
+            color: var(--text-color) !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #3e2723 !important;
+            font-weight: 500;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-image {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .order-card {
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .order-header {
+            background-color: var(--primary-color);
+            padding: 15px;
+            color: white;
+        }
+
+        .order-body {
+            padding: 20px;
+            background-color: white;
+        }
+
         .status-processing { color: #ffc107; font-weight: bold; }
         .status-out-for-delivery { color: #0dcaf0; font-weight: bold; }
-        .status-completed { color: #198754; font-weight: bold; }
-        .status-cancelled { color: #dc3545; font-weight: bold; }
-        .item-list { list-style-type: none; padding-left: 0; }
-        .item-list li { padding: 5px 0; border-bottom: 1px dashed #eee; }
-        .pagination .page-item.active .page-link { background-color: #5d4037; border-color: #5d4037; }
-        .navbar { background-color:bisque !important; color: #5d4037 !important; }
-        .navbar-brand { font-size: 1.5rem; }
-        .navbar-nav .nav-link { color: #5d4037 !important; }
-        .navbar-nav .nav-link.active { font-weight: bold; }
-        .navbar-nav .nav-link:hover { color: #3e2723 !important; }
-        .dropdown-menu { background-color: #fff; }
-        .user-image { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+        .status-completed { color: var(--success-color); font-weight: bold; }
+        .status-cancelled { color: var(--danger-color); font-weight: bold; }
+
+        .item-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .item-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--text-color);
+            border-color: var(--text-color);
+        }
+
+        .pagination .page-link {
+            color: var(--text-color);
+        }
+
+        .pagination .page-link:hover {
+            color: var(--primary-hover);
+        }
+
+        .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .filter-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-inset);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 0.2rem rgba(216, 172, 159, 0.25);
+        }
+
+        .btn-dark {
+            background-color: var(--text-color);
+            border-color: var(--text-color);
+        }
+
+        .btn-dark:hover {
+            background-color: #3e2723;
+            border-color: #3e2723;
+        }
+
+        @media (max-width: 768px) {
+            .order-header .row > div {
+                margin-bottom: 10px;
+            }
+            
+            .order-header .text-end {
+                text-align: left !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -173,33 +311,35 @@ $order_statuses = ['Processing', 'Out for Delivery', 'Completed', 'Cancelled'];
 <div class="container mt-4">
     <h2 class="mb-4">My Orders</h2>
 
-    <form method="get" class="mb-4">
-        <div class="row g-3">
-            <div class="col-md-3">
-                <label for="date_from" class="form-label">Date from</label>
-                <input type="date" class="form-control" id="date_from" name="date_from" value="<?= htmlspecialchars($date_from) ?>">
+    <div class="filter-container">
+        <form method="get">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="date_from" class="form-label">Date from</label>
+                    <input type="date" class="form-control" id="date_from" name="date_from" value="<?= htmlspecialchars($date_from) ?>">
+                </div>
+                <div class="col-md-3">
+                    <label for="date_to" class="form-label">Date to</label>
+                    <input type="date" class="form-control" id="date_to" name="date_to" value="<?= htmlspecialchars($date_to) ?>">
+                </div>
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">All</option>
+                        <?php foreach ($order_statuses as $status): ?>
+                            <option value="<?= $status ?>" <?= $status == $status_filter ? 'selected' : '' ?>>
+                                <?= $status ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-dark me-2">Filter</button>
+                    <a href="my_orders.php" class="btn btn-outline-secondary">Reset</a>
+                </div>
             </div>
-            <div class="col-md-3">
-                <label for="date_to" class="form-label">Date to</label>
-                <input type="date" class="form-control" id="date_to" name="date_to" value="<?= htmlspecialchars($date_to) ?>">
-            </div>
-            <div class="col-md-3">
-                <label for="status" class="form-label">Status</label>
-                <select class="form-select" id="status" name="status">
-                    <option value="">All</option>
-                    <?php foreach ($order_statuses as $status): ?>
-                        <option value="<?= $status ?>" <?= $status == $status_filter ? 'selected' : '' ?>>
-                            <?= $status ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-dark me-2">Filter</button>
-                <a href="my_orders.php" class="btn btn-outline-secondary">Reset</a>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
 
     <?php if (empty($orders)): ?>
         <div class="alert alert-info">No orders found.</div>
@@ -248,7 +388,9 @@ $order_statuses = ['Processing', 'Out for Delivery', 'Completed', 'Cancelled'];
                         <div class="text-end mt-3">
                             <form method="post" action="cancel_order.php" class="d-inline">
                                 <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">CANCEL ORDER</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger" >
+                                    <i class="fas fa-times-circle"></i> Cancel Order
+                                </button>
                             </form>
                         </div>
                     <?php endif; ?>

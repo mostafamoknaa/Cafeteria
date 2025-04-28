@@ -22,7 +22,7 @@ if (!isset($_SESSION['user_id'])) {
     <title>Dashboard</title>
     <style>
         .navbar {
-            background-color:bisque !important;
+            background-color:#D8AC9F  !important;
             color: white !important;
         }
     </style>

@@ -41,184 +41,257 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
     <title>Product Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        :root {
-            --primary-color: bisque;
-            --secondary-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --text-color: #333;
-            --light-bg: #f8f9fa;
-            --border-color: #ddd;
-        }
+    :root {
+        --primary-color: #D8AC9F;
+        --primary-hover: #C28D7A;
+        --text-color: #5d4037;
+        --light-bg: #f8f9fa;
+        --border-color: #D8AC9F;
+        --danger-color: #e74c3c;
+        --success-color: #27ae60;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-bg);
-            padding: 20px;
-        }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--light-bg);
+        padding: 20px;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
 
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    h1, h2 {
+        color: var(--text-color);
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .btn:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+    }
+
+    th, td {
+        border: 1px solid var(--border-color);
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+        background-color: rgba(216, 172, 159, 0.1);
+    }
+
+    tr:hover {
+        background-color: rgba(216, 172, 159, 0.2);
+    }
+
+    .product-image {
+        max-width: 80px;
+        max-height: 80px;
+        border-radius: 4px;
+        object-fit: cover;
+        border: 1px solid var(--border-color);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.3s;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .edit-btn {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+    }
+
+    .edit-btn:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
+
+    .delete-btn {
+        background-color: #f8d7da;
+        color: var(--danger-color);
+    }
+
+    .delete-btn:hover {
+        background-color: var(--danger-color);
+        color: white;
+    }
+
+    .action-btn i {
+        margin-right: 5px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .pagination a:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
+
+    .pagination a.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    #searchInput {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    #searchInput:focus {
+        outline: none;
+        border-color: var(--primary-hover);
+        box-shadow: 0 0 0 0.2rem rgba(216, 172, 159, 0.25);
+    }
+
+    .no-image {
+        color: #8d6e63;
+        font-size: 14px;
+    }
+
+    .action-buttons {
+    border: none;
+}
+
+
+    @media (max-width: 768px) {
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
         }
-
-        h1, h2 {
-            color:burlywood;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #2980b9;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
+        
+        #searchInput {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: black;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .product-image {
-            max-width: 80px;
-            max-height: 80px;
-            border-radius: 4px;
-            object-fit: cover;
-        }
-
+        
         .action-buttons {
-            display: flex;
-            gap: 8px;
+            flex-direction: column;
+            gap: 5px;
         }
-
-        .action-buttons a {
-            color :orange;
-            text-decoration: none;
-            padding: 5px;
-            border-radius: 4px;
+        
+        th, td {
+            padding: 8px;
+            font-size: 14px;
         }
-
-        .action-buttons a:hover {
-            background-color: #f1f1f1;
+        
+        .product-image {
+            max-width: 50px;
+            max-height: 50px;
         }
-
-        .action-buttons a.delete {
-            color: var(--danger-color);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .badge-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .badge-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .pagination a {
-            padding: 8px 12px;
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            color: black;
-            text-decoration: none;
-        }
-
-        .pagination a.active {
-            background-color: black;
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .action-buttons a {
-                margin-bottom: 5px;
-            }
-
-            th, td {
-                padding: 8px;
-            }
-
-            .table-responsive {
-                overflow-x: auto;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 <div class="container">
     <header>
         <h1><i class="fas fa-box"></i> Product Management</h1>
-        <a href="addproduct.php" class="btn">Add Product</a>
+        <a href="addproduct.php" class="btn"><i class="fas fa-plus"></i> Add Product</a>
     </header>
-    <div style="margin-bottom: 20px;">
-        <input type="text" id="searchInput" placeholder="Search products..." style="width: 20%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+    
+    <div>
+        <input type="text" id="searchInput" placeholder="Search products...">
     </div>
 
     <h2><i class="fas fa-list"></i> Product List</h2>
@@ -256,12 +329,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
                         </td>
                         <td><?= htmlspecialchars($product['category_name'] ?? 'No Category') ?></td>
                         <td class="action-buttons">
-                            <a href="addproduct.php?edit=<?= $product['id'] ?>" title="Edit">
+                            <a href="addproduct.php?edit=<?= $product['id'] ?>" class="action-btn edit-btn">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
                             <form action="" method="post" style="display:inline;">
                                 <input type="hidden" name="delete_id" value="<?= $product['id'] ?>">
-                                <button type="submit" name="delete_product" class="btn" style="background-color: var(--danger-color); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                                <button type="submit" name="delete_product" class="action-btn delete-btn">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </form>
@@ -276,11 +349,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_product"])) {
         <div class="pagination" id="pagination"></div>
     </div>
 </div>
+
 <script>
     const table = document.getElementById('productTable');
     const rows = Array.from(table.getElementsByTagName('tbody')[0].rows);
     const pagination = document.getElementById('pagination');
-    const rowsPerPage = 3;
+    const rowsPerPage = 5;
     let filteredRows = [...rows];
     const searchInput = document.getElementById('searchInput');
 

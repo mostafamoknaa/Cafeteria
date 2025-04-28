@@ -72,131 +72,143 @@ $categoriesResult = mysqli_query($conn, $categoriesQuery);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+        color: #5d4037;
+    }
 
-        .main-container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 12px rgba(0,0,0,0.1);
-        }
+    .main-container {
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 12px rgba(0,0,0,0.1);
+    }
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
+    h2 {
+        text-align: center;
+        color: #5d4037;
+        margin-bottom: 20px;
+    }
 
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+        flex: 1 1 60%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #D8AC9F;
+        border-radius: 6px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        color: #5d4037;
+        background-color: #D8AC9F;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #C28D7A;
+        color: #5d4037;
+    }
+
+    .error {
+        color: #dc3545;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 12px;
+        border: 1px solid #D8AC9F;
+        text-align: center;
+    }
+
+    th {
+        background-color: #D8AC9F;
+        color: #5d4037;
+    }
+
+    .update-btn {
+        background-color: #D8AC9F;
+        border-radius: 6px;
+        color: #5d4037;
+    }
+
+    .update-btn:hover {
+        background-color: #C28D7A;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        border-radius: 6px;
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .pagination a {
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        background-color: #D8AC9F;
+        color: #5d4037;
+        transition: background-color 0.3s;
+    }
+
+    .pagination a:hover {
+        background-color: #C28D7A;
+        color: #5d4037;
+    }
+
+    .pagination a.active {
+        background-color: #C28D7A;
+        color: #5d4037;
+        font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
         form {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            align-items: stretch;
         }
 
-        input[type="text"] {
-            flex: 1 1 60%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            background-color:rgb(241, 155, 50);
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color:rgb(15, 4, 1);
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        table {
+        input, button {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
         }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #ccc;
-            text-align: center;
-            color: #333;
-        }
-
-        th {
-            background-color:rgb(235, 156, 61);
-            color: white;
-        }
-
-        .update-btn {
-            background-color: #e0ac0d;
-            border-radius: 10px;
-        }
-
-        .update-btn:hover {
-            background-color: #cf9708;
-        }
-
-        .delete-btn {
-            background-color: #dc3545;
-            border-radius: 10px;
-        }
-
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-
-        .pagination {
-            margin-top: 20px;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .pagination a {
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-
-        .pagination a.active {
-            background-color: #ffe4c4;
-            color: white;
-        }
-
-        @media (max-width: 600px) {
-            form {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            input, button {
-                width: 100%;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <?php include "../shared/navbar.php"; ?>

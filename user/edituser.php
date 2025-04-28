@@ -22,7 +22,7 @@ if (isset($_GET['id'])) {
 
     if (!$user) {
         $error = "User not found!";
-        header("Location: read_users.php");
+        header("Location: listuser.php");
         exit();
     }
 }
@@ -130,33 +130,173 @@ mysqli_close($conn);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+    :root {
+        --primary-color: #D8AC9F;
+        --primary-hover: #C28D7A;
+        --text-color: #5d4037;
+        --light-bg: #f8f9fa;
+        --border-color: #D8AC9F;
+        --danger-color: #e74c3c;
+        --success-color: #27ae60;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        --shadow-inset: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    body {
+        background-color: #f5f5f5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .form-title {
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        text-align: center;
+        font-size: 1.8rem;
+    }
+
+    .profile-picture {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 1.5rem;
+        display: block;
+        border: 3px solid white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .picture-container {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .form-control, .form-select {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-hover);
+        box-shadow: 0 0 0 0.2rem rgba(216, 172, 159, 0.25),
+                    var(--shadow-md);
+        outline: none;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: var(--text-color);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+        background-color: #f8f9fa;
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+
+    .btn-secondary:hover {
+        background-color: #e9ecef;
+        color: var(--text-color);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .alert {
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .invalid-feedback {
+        color: var(--danger-color);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .was-validated .form-control:invalid, 
+    .was-validated .form-control.is-invalid {
+        border-color: var(--danger-color);
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+
+    .was-validated .form-control:valid,
+    .was-validated .form-control.is-valid {
+        border-color: var(--success-color);
+        box-shadow: 0 0 0 0.2rem rgba(39, 174, 96, 0.25);
+    }
+
+    .text-muted {
+        color: #8d6e63 !important;
+        font-size: 0.85rem;
+    }
+
+    /* File input custom styling */
+    .form-control[type="file"] {
+        padding: 0.5rem;
+        background: white;
+    }
+
+    .form-control[type="file"]::file-selector-button {
+        padding: 0.5rem 1rem;
+        background-color: var(--light-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-right: 1rem;
+    }
+
+    .form-control[type="file"]::file-selector-button:hover {
+        background-color: #e9ecef;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
         .form-container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 1rem;
+            padding: 1.5rem;
         }
-        .form-title {
-            color: #0d6efd;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+        
         .profile-picture {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 20px;
-            display: block;
+            width: 120px;
+            height: 120px;
         }
-        .picture-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>

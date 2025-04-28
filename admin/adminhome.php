@@ -9,28 +9,70 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGFETqB7g/0Qfdf5xUL6VwKZV8Hj1/igZ0SovJUc1Y6z" crossorigin="anonymous"></script>
   <style>
     body { background-color: #f8f9fa; }
-    .navbar { background-color: bisque !important;
-      color: white !important;
-     }
+    .navbar { 
+      background-color: #D8AC9F !important;
+      color: #5d4037 !important;
+    }
+    .navbar-brand,
+    .nav-link {
+      color: #5d4037 !important;
+    }
+    .navbar-brand:hover,
+    .nav-link:hover {
+      color: #3e2723 !important;
+    }
     
     .menu-item { transition: transform 0.2s; cursor: pointer; }
     .menu-item:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .product-icon { height: 80px; display: flex; align-items: center; justify-content: center; }
-    .btn-confirm { background-color: bisque; color: white; }
-    .btn-confirm:hover { background-color: bisque; }
+    .btn-confirm { 
+      background-color: #D8AC9F; 
+      color: #5d4037; 
+      border-color: #D8AC9F;
+    }
+    .btn-confirm:hover { 
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: #5d4037;
+    }
     .order-item { background-color: #f5f5f5; border-radius: 5px; margin-bottom: 10px; }
-    .order-for-badge { background-color: #5d4037; color: white; }
+    .order-for-badge { background-color:#C28D7A; color: white; }
     .user-selection { margin-bottom: 20px; padding: 15px; border-radius: 8px; background-color: #eee; }
     .btn-bisque {
-    background-color: bisque !important;
-    border-color: bisque !important;
-    color: black !important;
-  }
-  .btn-bisque:hover {
-    background-color: #e3b98c !important;
-    border-color: #e3b98c !important;
-    color: black !important;
-  }
+      background-color: #D8AC9F !important;
+      border-color: #D8AC9F !important;
+      color: #5d4037 !important;
+    }
+    .btn-bisque:hover {
+      background-color: #C28D7A !important;
+      border-color: #C28D7A !important;
+      color: #5d4037 !important;
+    }
+    .btn-reset {
+      background-color: #f8f9fa !important;
+      border-color: #D8AC9F !important;
+      color: #5d4037 !important;
+    }
+    .btn-reset:hover {
+      background-color: #C28D7A !important;
+      border-color: #C28D7A !important;
+      color: #5d4037 !important;
+    }
+    .pagination .page-link {
+      color: #5d4037;
+      background-color: #D8AC9F;
+      border-color: #D8AC9F;
+    }
+    .pagination .page-item.active .page-link {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: #5d4037;
+    }
+    .pagination .page-link:hover {
+      background-color: #C28D7A;
+      border-color: #C28D7A;
+      color: #5d4037;
+    }
   </style>
 </head>
 <body>
@@ -218,7 +260,7 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
                 <div class="d-flex align-items-center">
                   <span class="mx-2">x<?= $item['quantity'] ?></span>
                   <form method="post"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
-                    <button name="increase_qty" class="btn btn-sm  btn-bisque w-100"><i class="fas fa-plus"></i></button></form>
+                    <button name="increase_qty" style="background-color: rgb(235, 190, 177);" class="btn btn-sm  w-100"><i class="fas fa-plus"></i></button></form>
                   <form method="post" class="ms-2"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
                     <button name="remove_item" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button></form>
                 </div>
@@ -296,7 +338,7 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
                 <button type="submit" class="btn btn-bisque w-100">Filter</button>
               </div>
               <div class="col-md-6">
-                <button type="button" class="btn btn-bisque w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
+              <button type="button" class="btn btn-reset w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
               </div>
             </div>
           </div>

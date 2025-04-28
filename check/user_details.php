@@ -4,7 +4,6 @@ session_start();
 
 $user_id = $_GET['id'] ?? null;
 
-
 if (!$user_id) {
     echo "No user selected.";
     exit;
@@ -19,14 +18,12 @@ if (!$user) {
     exit;
 }
 
-
 $orders_query = "SELECT id, created_at, total 
                  FROM orders 
                  WHERE user_id = $user_id 
                  AND status = 'completed'
                  ORDER BY created_at DESC";
 $orders_result = $conn->query($orders_query);
-
 ?>
 <?php include "../shared/navbar.php"; ?>
 <!DOCTYPE html>
@@ -36,22 +33,64 @@ $orders_result = $conn->query($orders_query);
     <title>Completed Orders for <?= htmlspecialchars($user['name']); ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
     <style>
-        .navbar { background-color: bisque !important; }
+        .navbar { 
+            background-color: #D8AC9F !important;
+            color: #5d4037 !important;
+        }
         body {
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
+            color: #5d4037;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
         .card {
             margin-bottom: 20px;
+            border: 1px solid #D8AC9F;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .card-header {
-            background-color: bisque;
-            color: black;
+            background-color: #D8AC9F;
+            color: #5d4037;
+            font-weight: bold;
+            border-bottom: 1px solid #C28D7A;
         }
         h1 {
             text-align: center;
             margin-bottom: 30px;
-            color: #333;
+            color: #5d4037;
+        }
+        .table {
+            border-color: #D8AC9F;
+        }
+        .table thead th {
+            background-color: #D8AC9F;
+            color: #5d4037;
+            border-color: #C28D7A;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(210, 180, 140, 0.1);
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+        .btn-primary {
+            background-color: #D8AC9F;
+            border-color: #D8AC9F;
+            color: #5d4037;
+        }
+        .btn-primary:hover {
+            background-color: #C28D7A;
+            border-color: #C28D7A;
+            color: #5d4037;
+        }
+        .text-end {
+            color: #5d4037;
         }
     </style>
 </head>
