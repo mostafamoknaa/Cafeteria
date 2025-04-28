@@ -110,6 +110,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $products = $conn->query("SELECT * FROM products WHERE available = 1")->fetch_all(MYSQLI_ASSOC);
 $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
+
+$query = "SELECT products.*, categories.name AS category_name 
+          FROM products 
+          JOIN categories ON products.category_id = categories.id 
+          WHERE 1";
+
+if (!empty($search)) {
+  $search_safe = $conn->real_escape_string($search);
+  $query .= " AND products.name LIKE '%$search_safe%'";
+}
+
+if ($category_id > 0) {
+  $query .= " AND products.category_id = $category_id";
+}
+
+$query .= " ORDER BY products.id DESC";
+
+$all_products = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+$total_products = count($all_products);
+
+$products_per_page = 6;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max(1, $page); 
+$offset = ($page - 1) * $products_per_page;
+
+$total_pages = ceil($total_products / $products_per_page);
+$products = array_slice($all_products, $offset, $products_per_page);
+
+$categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-light">
@@ -131,8 +162,6 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
         <span><?= htmlspecialchars($user['name']) ?></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-        <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
-        <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item text-danger" href="../shared/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
       </ul>
     </div>
@@ -196,7 +225,32 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
     <!-- Menu Items -->
     <div class="col-md-8">
       <h4>Menu</h4>
-      <input type="text" id="searchInput" class="form-control search-box" placeholder="Search for products...">
+      <form method="get" class="row g-3 mb-4">
+          <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
+          </div>
+          <div class="col-md-4">
+            <select name="category_id" class="form-select">
+              <option value="">All Categories</option>
+              <?php foreach ($categories as $cat): ?>
+                <option value="<?= $cat['id'] ?>" <?= ($category_id == $cat['id']) ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($cat['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-md-6 mb-2 mb-md-0">
+                <button type="submit" class="btn btn-bisque w-100">Filter</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" class="btn btn-bisque w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
+              </div>
+            </div>
+          </div>
+
+        </form>
       <div class="row row-cols-1 row-cols-md-3 g-4" id="productsContainer">
         <?php foreach ($products as $product): ?>
         <div class="col product-card">
@@ -218,9 +272,17 @@ $total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item[
         </div>
         <?php endforeach; ?>
       </div>
-      <nav>
-        <ul class="pagination" id="pagination"></ul>
-      </nav>
+      <div class="mt-4 d-flex justify-content-center">
+        <nav>
+          <ul class="pagination">
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+              <li class="page-item  <?= $i == $page ? 'active' : '' ?>">
+                <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+              </li>
+            <?php endfor; ?>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 </div>

@@ -149,12 +149,23 @@ $selected_user_id = $_SESSION['selected_user_id'];
 $selected_user = $conn->query("SELECT name FROM users WHERE id = $selected_user_id")->fetch_assoc();
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
 
-$query = "SELECT * FROM products";
+$query = "SELECT products.*, categories.name AS category_name 
+          FROM products 
+          JOIN categories ON products.category_id = categories.id 
+          WHERE 1";
+
 if (!empty($search)) {
   $search_safe = $conn->real_escape_string($search);
-  $query .= " WHERE name LIKE '%$search_safe%'";
+  $query .= " AND products.name LIKE '%$search_safe%'";
 }
+
+if ($category_id > 0) {
+  $query .= " AND products.category_id = $category_id";
+}
+
+$query .= " ORDER BY products.id DESC";
 
 $all_products = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
 $total_products = count($all_products);
@@ -166,6 +177,9 @@ $offset = ($page - 1) * $products_per_page;
 
 $total_pages = ceil($total_products / $products_per_page);
 $products = array_slice($all_products, $offset, $products_per_page);
+
+$categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_ASSOC);
+
 ?>
 
 <?php include "../shared/navbar.php"; ?>
@@ -262,14 +276,40 @@ $products = array_slice($all_products, $offset, $products_per_page);
     <div class="col-md-8">
       <div class="card mb-4">
         <div class="card-header">Menu</div>
-        <form class="mb-4" method="get">
-          <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search menu..." value="<?= htmlspecialchars($search) ?>">
-            <button class="btn btn-bisque" type="submit"><i class="fas fa-search"></i> Search</button>
+        <form method="get" class="row g-3 mb-4">
+          <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
+          </div>
+          <div class="col-md-4">
+            <select name="category_id" class="form-select">
+              <option value="">All Categories</option>
+              <?php foreach ($categories as $cat): ?>
+                <option value="<?= $cat['id'] ?>" <?= ($category_id == $cat['id']) ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($cat['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-md-6 mb-2 mb-md-0">
+                <button type="submit" class="btn btn-bisque w-100">Filter</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" class="btn btn-bisque w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
+              </div>
+            </div>
           </div>
         </form>
+
         <div class="card-body">
         <div class="row row-cols-1 row-cols-md-3 g-4">
+          <?php if (empty($products)): ?>
+            <div class="col">
+              <div class="alert alert-warning text-center">No products found.</div>
+            </div>
+          <?php endif; ?>
+
         <?php foreach ($products as $product): ?>
         <div class="col">
           <form method="post">
@@ -294,7 +334,7 @@ $products = array_slice($all_products, $offset, $products_per_page);
         <nav>
           <ul class="pagination">
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-              <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+              <li class="page-item  <?= $i == $page ? 'active' : '' ?>">
                 <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
               </li>
             <?php endfor; ?>

@@ -18,21 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'])) {
     $result = $stmt->get_result();
     
     if ($result->num_rows > 0) {
-        // First delete order items
-        $deleteItems = $conn->prepare("DELETE FROM order_products WHERE order_id = ?");
-        $deleteItems->bind_param("i", $order_id);
-        $deleteItems->execute();
-        $deleteItems->close();
-
-        // Then delete the order itself
-        $deleteOrder = $conn->prepare("DELETE FROM orders WHERE id = ?");
-        $deleteOrder->bind_param("i", $order_id);
-        $deleteOrder->execute();
-        $deleteOrder->close();
+        // Update the order status to 'Cancelled'
+        $updateStatus = $conn->prepare("UPDATE orders SET status = 'Cancelled' WHERE id = ?");
+        $updateStatus->bind_param("i", $order_id);
+        $updateStatus->execute();
+        $updateStatus->close();
         
-        $_SESSION['order_message'] = "Order #$order_id has been deleted successfully.";
+        $_SESSION['order_message'] = "Order #$order_id has been cancelled successfully.";
     } else {
-        $_SESSION['order_error'] = "Order not found or cannot be deleted.";
+        $_SESSION['order_error'] = "Order not found or cannot be cancelled.";
     }
     
     $stmt->close();
