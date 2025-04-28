@@ -1,7 +1,11 @@
 <?php
 session_start();
 require "../connect.php";
-
+if (!isset($_SESSION['user_id'] ) || $_SESSION['user_role'] != 'admin') {
+    $_SESSION['error'] = 'You must be logged in as an admin to access this page.';
+    header('Location: ../shared/login.php');
+    exit();
+}
 
 if (!isset($_GET['id'])) {
     die("Order ID missing!");

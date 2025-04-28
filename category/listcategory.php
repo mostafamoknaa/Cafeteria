@@ -2,6 +2,12 @@
 <?php
 require "../connect.php";
 session_start(); 
+
+if (!isset($_SESSION['user_id'] ) || $_SESSION['user_role'] != 'admin') {
+    $_SESSION['error'] = 'You must be logged in as an admin to access this page.';
+    header('Location: ../shared/login.php');
+    exit();
+  }
 $errors = ["category" => ""];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {

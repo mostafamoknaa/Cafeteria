@@ -2,6 +2,12 @@
 session_start();
 require "../connect.php";
 
+
+if (!isset($_SESSION['user_id'] ) || $_SESSION['user_role'] != 'admin') {
+  $_SESSION['error'] = 'You must be logged in as an admin to access this page.';
+  header('Location: ../shared/login.php');
+  exit();
+}
 $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : '';
 $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : '';
 $status = isset($_GET['status']) ? $_GET['status'] : '';
@@ -149,6 +155,7 @@ $totalPages = ceil($totalOrders / $limit);
                     <th>Items</th>
                     <th>Total</th>
                     <th>Status</th>
+                    <th>Notes</th>
                     <th col="2" class="text-center">Actions</th>
                   </tr>
                 </thead>
@@ -165,6 +172,8 @@ $totalPages = ceil($totalOrders / $limit);
                           <?= ucfirst($order['status']) ?>
                         </span>
                       </td>
+                      <td><?= empty($order['notes']) ? 'No Notes' : htmlspecialchars($order['notes']) ?></td>
+
                       <td>
                         <a href="order_details.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-info">View</a>
                       </td>

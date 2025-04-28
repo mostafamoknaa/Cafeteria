@@ -2,11 +2,17 @@
 include "../connect.php";
 session_start();
 
+if (!isset($_SESSION['user_id'] ) || $_SESSION['user_role'] != 'admin') {
+    $_SESSION['error'] = 'You must be logged in as an admin to access this page.';
+    header('Location: ../shared/login.php');
+    exit();
+}
+
 $date_from = $_POST['date_from'] ?? '';
 $date_to = $_POST['date_to'] ?? '';
 $selected_user = $_POST['user'] ?? 'all';
 
-$where = "o.status = 'completed'";  // <<<<<<<<<<< IMPORTANT
+$where = "o.status = 'completed'";
 
 if (!empty($date_from) && !empty($date_to)) {
     $where .= " AND o.created_at BETWEEN '$date_from' AND '$date_to'";

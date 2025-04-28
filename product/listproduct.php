@@ -2,6 +2,12 @@
 require "../connect.php";
 session_start();
 
+if (!isset($_SESSION['user_id'] ) || $_SESSION['user_role'] != 'admin') {
+    $_SESSION['error'] = 'You must be logged in as an admin to access this page.';
+    header('Location: ../shared/login.php');
+    exit();
+  }
+
 $sql = "SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON p.category_id = c.id";
 $result = mysqli_query($conn, $sql);
 if (!$result) {
