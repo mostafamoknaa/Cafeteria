@@ -51,7 +51,7 @@ if (!empty($status_filter)) {
     $types .= "s";
 }
 
-// Count total for pagination
+
 $count_query = "SELECT COUNT(*) as total FROM orders WHERE user_id = ?";
 $count_params = [$user_id];
 $count_types = "i";
@@ -72,7 +72,7 @@ if (!empty($status_filter)) {
     $count_types .= "s";
 }
 
-// Get total pages
+
 $stmt = $conn->prepare($count_query);
 $stmt->bind_param($count_types, ...$count_params);
 $stmt->execute();
@@ -81,7 +81,7 @@ $stmt->close();
 
 $total_pages = ceil($total_orders / $items_per_page);
 
-// Apply order and pagination
+
 $query .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
 $params[] = $items_per_page;
 $params[] = $offset;
@@ -108,7 +108,6 @@ function buildQuery($overrides = []) {
     return http_build_query($params);
 }
 
-// Available statuses
 $order_statuses = ['Processing', 'Out for Delivery', 'Completed', 'Cancelled'];
 ?>
 
@@ -207,7 +206,7 @@ $order_statuses = ['Processing', 'Out for Delivery', 'Completed', 'Cancelled'];
         <?php $totalPriceThisPage = 0; ?>
         <?php foreach ($orders as $order): ?>
             <?php $items = getOrderItems($conn, $order['id']); ?>
-            <?php $totalPriceThisPage += $order['total']; ?>
+            <?php if ($order['status'] === 'complete') $totalPriceThisPage += $order['total']; ?>
             <div class="order-card">
                 <div class="order-header">
                     <div class="row">
@@ -246,10 +245,30 @@ $order_statuses = ['Processing', 'Out for Delivery', 'Completed', 'Cancelled'];
                     </ul>
                     <?php if ($order['status'] == 'Processing'): ?>
                         <div class="text-end mt-3">
-                            <form method="post" action="cancel_order.php" class="d-inline">
-                                <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">CANCEL ORDER</button>
-                            </form>
+                        <form method="post" action="cancel_order.php" id="cancelForm<?= $order['id'] ?>" class="d-inline">
+                            <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmCancelModal<?= $order['id'] ?>">
+                                CANCEL ORDER
+                            </button>
+                        </form>
+                        <div class="modal fade" id="confirmCancelModal<?= $order['id'] ?>" tabindex="-1" aria-labelledby="cancelModalLabel<?= $order['id'] ?>" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="cancelModalLabel<?= $order['id'] ?>">Confirm Cancellation</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to cancel this order?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                    <button type="button" class="btn btn-danger" onclick="document.getElementById('cancelForm<?= $order['id'] ?>').submit();">Yes, Cancel</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+
                         </div>
                     <?php endif; ?>
                 </div>
