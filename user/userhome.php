@@ -18,38 +18,65 @@
     .pagination { justify-content: center; margin-top: 20px; }
     .search-box { margin-bottom: 20px; }
     .btn-bisque {
-    background-color: bisque;
-    border-color: bisque;
-    color: black;
-  }
-  .btn-bisque:hover {
-    background-color: #e3b98c;
-    border-color: #e3b98c;
-    color: black;
-  }
+      background-color: bisque;
+      border-color: bisque;
+      color: black;
+    }
+    .btn-bisque:hover {
+      background-color: #e3b98c;
+      border-color: #e3b98c;
+      color: black;
+    }
   </style>
 </head>
 <body>
+
+<!-- Login Confirmation Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalLabel">Login Required</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        You need to login before make an order. Would you like to login now?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="../shared/login.php" class="btn btn-bisque">Login</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <?php
 require_once('../connect.php');
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-  header('Location: ../shared/login.php');
-  exit();
-}
-
-$user_id = $_SESSION['user_id'];
-$user = $conn->query("SELECT * FROM users WHERE id = $user_id")->fetch_assoc();
-
+// Initialize session variables if not set
 if (!isset($_SESSION['order_items'])) {
   $_SESSION['order_items'] = [];
   $_SESSION['order_notes'] = '';
   $_SESSION['order_room'] = 'Room 101';
 }
 
+// Check if user is logged in
+$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+$user = $user_id ? $conn->query("SELECT * FROM users WHERE id = $user_id")->fetch_assoc() : null;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Check if user is logged in when trying to perform actions
+  if (!isset($_SESSION['user_id'])) {
+    if (isset($_POST['add_item']) || isset($_POST['confirm_order'])) {
+      echo '<script>
+        var loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+        loginModal.show();
+      </script>';
+      exit();
+    }
+  }
+
   $post = $_POST;
   if (isset($post['add_item'])) {
     $product_id = (int)$post['product_id'];
@@ -108,8 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   exit();
 }
 
-$products = $conn->query("SELECT * FROM products WHERE available = 1")->fetch_all(MYSQLI_ASSOC);
-$total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
 
@@ -141,6 +166,8 @@ $total_pages = ceil($total_products / $products_per_page);
 $products = array_slice($all_products, $offset, $products_per_page);
 
 $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_ASSOC);
+
+$total = array_reduce($_SESSION['order_items'], fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-light">
@@ -149,21 +176,27 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="my_orders.php">My Orders</a></li>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <li class="nav-item"><a class="nav-link" href="my_orders.php">My Orders</a></li>
+        <?php endif; ?>
       </ul>
     </div>
     <div class="dropdown">
-      <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        <?php if (!empty($user['picture'])): ?>
-          <img src="../images/<?= htmlspecialchars($user['picture']) ?>" width="30" height="30" class="rounded-circle me-2">
-        <?php else: ?>
-          <i class="fas fa-user-circle me-2 fs-5"></i>
-        <?php endif; ?>
-        <span><?= htmlspecialchars($user['name']) ?></span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-        <li><a class="dropdown-item text-danger" href="../shared/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-      </ul>
+      <?php if (isset($_SESSION['user_id'])): ?>
+        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <?php if (!empty($user['picture'])): ?>
+            <img src="../images/<?= htmlspecialchars($user['picture']) ?>" width="30" height="30" class="rounded-circle me-2">
+          <?php else: ?>
+            <i class="fas fa-user-circle me-2 fs-5"></i>
+          <?php endif; ?>
+          <span><?= htmlspecialchars($user['name']) ?></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item text-danger" href="../shared/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+        </ul>
+      <?php else: ?>
+        <a class="btn btn-bisque" href="../shared/login.php">Login</a>
+      <?php endif; ?>
     </div>
   </div>
 </nav>
@@ -191,30 +224,34 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
               </div>
               <div class="d-flex align-items-center">
                 <span class="mx-2">x<?= $item['quantity'] ?></span>
-                <form method="post"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
-                  <button name="increase_qty" class="btn btn-sm btn-dark"><i class="fas fa-plus"></i></button></form>
-                <form method="post" class="ms-2"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
-                  <button name="remove_item" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button></form>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                  <form method="post"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
+                    <button name="increase_qty" class="btn btn-sm btn-dark"><i class="fas fa-plus"></i></button></form>
+                  <form method="post" class="ms-2"><input type="hidden" name="item_id" value="<?= $item['id'] ?>">
+                    <button name="remove_item" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button></form>
+                <?php endif; ?>
               </div>
             </div>
           <?php endforeach; ?>
-          <form method="post" class="mt-3">
-            <textarea class="form-control mb-2" name="notes" placeholder="Add notes..."><?= htmlspecialchars($_SESSION['order_notes']) ?></textarea>
-            <button name="update_notes" class="btn btn-sm btn-bisque w-100">Update Notes</button>
-          </form>
-          <form method="post" class="mt-3">
-            <select name="room" class="form-select mb-2">
-              <?php foreach (["Room 101", "Room 102", "Room 103"] as $room): ?>
-                <option value="<?= $room ?>" <?= $_SESSION['order_room'] == $room ? 'selected' : '' ?>><?= $room ?></option>
-              <?php endforeach; ?>
-            </select>
-            <button name="update_room" class="btn btn-sm btn-bisque w-100">Update Room</button>
-          </form>
+          <?php if (isset($_SESSION['user_id'])): ?>
+            <form method="post" class="mt-3">
+              <textarea class="form-control mb-2" name="notes" placeholder="Add notes..."><?= htmlspecialchars($_SESSION['order_notes']) ?></textarea>
+              <button name="update_notes" class="btn btn-sm btn-bisque w-100">Update Notes</button>
+            </form>
+            <form method="post" class="mt-3">
+              <select name="room" class="form-select mb-2">
+                <?php foreach (["Room 101", "Room 102", "Room 103"] as $room): ?>
+                  <option value="<?= $room ?>" <?= $_SESSION['order_room'] == $room ? 'selected' : '' ?>><?= $room ?></option>
+                <?php endforeach; ?>
+              </select>
+              <button name="update_room" class="btn btn-sm btn-bisque w-100">Update Room</button>
+            </form>
+          <?php endif; ?>
           <div class="mt-3 text-end">
             <h5>Total: EGP <?= number_format($total, 2) ?></h5>
           </div>
           <form method="post">
-            <button name="confirm_order" class="btn btn-confirm w-100 mt-2" <?= empty($_SESSION['order_items']) ? 'disabled' : '' ?>>
+            <button name="confirm_order" class="btn btn-confirm w-100 mt-2" <?= empty($_SESSION['order_items']) ? 'disabled' : '' ?> onclick="return checkLogin(event)">
               <i class="fas fa-check"></i> Confirm Order
             </button>
           </form>
@@ -226,31 +263,30 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
     <div class="col-md-8">
       <h4>Menu</h4>
       <form method="get" class="row g-3 mb-4">
-          <div class="col-md-4">
-            <input type="text" name="search" class="form-control" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
-          </div>
-          <div class="col-md-4">
-            <select name="category_id" class="form-select">
-              <option value="">All Categories</option>
-              <?php foreach ($categories as $cat): ?>
-                <option value="<?= $cat['id'] ?>" <?= ($category_id == $cat['id']) ? 'selected' : '' ?>>
-                  <?= htmlspecialchars($cat['name']) ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <div class="row">
-              <div class="col-md-6 mb-2 mb-md-0">
-                <button type="submit" class="btn btn-bisque w-100">Filter</button>
-              </div>
-              <div class="col-md-6">
-                <button type="button" class="btn btn-bisque w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
-              </div>
+        <div class="col-md-4">
+          <input type="text" name="search" class="form-control" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
+        </div>
+        <div class="col-md-4">
+          <select name="category_id" class="form-select">
+            <option value="">All Categories</option>
+            <?php foreach ($categories as $cat): ?>
+              <option value="<?= $cat['id'] ?>" <?= ($category_id == $cat['id']) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($cat['name']) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <div class="row">
+            <div class="col-md-6 mb-2 mb-md-0">
+              <button type="submit" class="btn btn-bisque w-100">Filter</button>
+            </div>
+            <div class="col-md-6">
+              <button type="button" class="btn btn-bisque w-100" onclick="window.location.href='<?= $_SERVER['PHP_SELF'] ?>'">Reset</button>
             </div>
           </div>
-
-        </form>
+        </div>
+      </form>
       <div class="row row-cols-1 row-cols-md-3 g-4" id="productsContainer">
         <?php foreach ($products as $product): ?>
         <div class="col product-card">
@@ -263,7 +299,7 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
               <div class="card-body text-center">
                 <h6 class="product-name"><?= htmlspecialchars($product['name']) ?></h6>
                 <p class="text-muted">EGP <?= number_format($product['price'], 2) ?></p>
-                <button name="add_item" class="btn btn-sm btn-bisque">
+                <button name="add_item" class="btn btn-sm btn-bisque" onclick="return checkLogin(event)">
                   <i class="fas fa-shopping-cart"></i> Add to Order
                 </button>
               </div>
@@ -276,8 +312,8 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
         <nav>
           <ul class="pagination">
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-              <li class="page-item  <?= $i == $page ? 'active' : '' ?>">
-                <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+              <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                <a class="page-link" href="?page=<?= $i ?><?= $search ? '&search='.urlencode($search) : '' ?><?= $category_id ? '&category_id='.$category_id : '' ?>"><?= $i ?></a>
               </li>
             <?php endfor; ?>
           </ul>
@@ -289,6 +325,17 @@ $categories = $conn->query("SELECT id, name FROM categories")->fetch_all(MYSQLI_
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+function checkLogin(event) {
+  <?php if (!isset($_SESSION['user_id'])): ?>
+    event.preventDefault();
+    var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    loginModal.show();
+    return false;
+  <?php else: ?>
+    return true;
+  <?php endif; ?>
+}
+
 // Pagination and search
 const itemsPerPage = 6;
 let currentPage = 1;
@@ -343,7 +390,5 @@ window.onload = () => {
   filterProducts();
 };
 </script>
-
-
 </body>
 </html>
