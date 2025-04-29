@@ -46,7 +46,7 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-$users_per_page = 3;
+$users_per_page = 6;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $users_per_page;
 
@@ -86,7 +86,7 @@ $total_pages = ceil($total_users / $users_per_page);
         }
         
         .navbar {
-            background-color: #D8AC9F !important;
+            background-color: #e3b98c !important;
         }
         
         .navbar-brand, .nav-link {
@@ -94,18 +94,18 @@ $total_pages = ceil($total_users / $users_per_page);
         }
         
         .btn-primary, .btn-add {
-            background-color: #D8AC9F;
-            border-color: #D8AC9F;
+            background-color: #e3b98c;
+            border-color: #e3b98c;
             color: #5d4037;
         }
         
         .btn-primary:hover, .btn-add:hover {
-            background-color: #C28D7A;
-            border-color: #C28D7A;
+            background-color: #e3b98c;
+            border-color: #e3b98c;
         }
         
         .table thead {
-            background-color: #D8AC9F  !important;
+            background-color: #e3b98c  !important;
             color: white;
         }
         
@@ -114,8 +114,8 @@ $total_pages = ceil($total_users / $users_per_page);
         }
         
         .pagination .page-item.active .page-link {
-            background-color: #D8AC9F;
-            border-color: #D8AC9F;
+            background-color: #e3b98c;
+            border-color: #e3b98c;
             color: white;
         }
     </style>
