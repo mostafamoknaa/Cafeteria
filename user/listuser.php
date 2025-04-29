@@ -4,6 +4,13 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 include_once("../connect.php");
+session_start();
+
+if (!isset($_SESSION['user_id'] ) || $_SESSION['user_role'] != 'admin') {
+  $_SESSION['error'] = 'You must be logged in as an admin to access this page.';
+  header('Location: ../shared/login.php');
+  exit();
+}
 
 if (isset($_GET['delete_id'])) {
     $delete_id = mysqli_real_escape_string($conn, $_GET['delete_id']);
