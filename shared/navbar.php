@@ -1,6 +1,8 @@
 <?php
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $user_id1 = $_SESSION['user_id'];
 $sql1 = "SELECT * FROM users WHERE id = $user_id1";
